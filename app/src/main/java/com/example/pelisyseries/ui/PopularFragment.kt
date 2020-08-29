@@ -8,10 +8,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.example.pelisyseries.R
 import com.example.pelisyseries.data.TableMovie
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.repository.GenericRepository
+import com.example.pelisyseries.data.repository.POPULAR
 import com.example.pelisyseries.domain.PopularUseCase
 import com.example.pelisyseries.ui.adapter.MovieAdapter
 import com.example.pelisyseries.ui.customs.BaseFragment
@@ -35,18 +37,10 @@ class PopularFragment: BaseFragment() {
     private lateinit var viewAdapter: MovieAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
 
+    private lateinit var progress: LottieAnimationView
+    private lateinit var recyclerview: RecyclerView
+
     override fun onBackPressFragment() = false
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        repository = GenericRepository.getInstance(context!!)
-
-        CoroutineScope(Main).launch {
-            viewModel.getListMovies()
-        }
-
-        setupViewModelAndObserve()
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -56,8 +50,16 @@ class PopularFragment: BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var movies = repository.getMovie(arrayOf(TableMovie.Columns.COLUMN_NAME_ORIGEN_LIST), arrayOf("popular"), null)
-        setAdapter(movies)
+        repository = GenericRepository.getInstance(context!!)
+
+        progress = view.findViewById(R.id.progress)
+        recyclerview = view.findViewById(R.id.recyclerview)
+
+        CoroutineScope(Main).launch {
+            viewModel.getListMovies(repository)
+        }
+
+        setupViewModelAndObserve()
     }
 
     /**
@@ -67,14 +69,18 @@ class PopularFragment: BaseFragment() {
         val daysObserver = Observer<List<Movie>> {
             //Actualizar la vista
 
+            progress.cancelAnimation()
+            progress.visibility = View.GONE
+            recyclerview.visibility = View.VISIBLE
+
             for(movie in it){
-                movie.origen = "popular"
+                movie.origen = POPULAR
                 repository.insert(movie)
             }
 
-            if(it.isNotEmpty()) setAdapter(it)
+            setAdapter(it)
         }
-        viewModel.getListMoviesLiveData().observe(this, daysObserver)
+        viewModel.getListMoviesLiveData().observe(viewLifecycleOwner, daysObserver)
     }
 
     private fun setAdapter(movies: List<Movie>) {

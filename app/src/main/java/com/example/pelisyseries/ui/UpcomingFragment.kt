@@ -12,6 +12,7 @@ import com.example.pelisyseries.R
 import com.example.pelisyseries.data.TableMovie
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.repository.GenericRepository
+import com.example.pelisyseries.data.repository.UPCOMING
 import com.example.pelisyseries.domain.UpcomingUseCase
 import com.example.pelisyseries.ui.adapter.MovieAdapter
 import com.example.pelisyseries.ui.customs.BaseFragment
@@ -68,7 +69,7 @@ class UpcomingFragment: BaseFragment() {
         val daysObserver = Observer<List<Movie>> {
             //Actualizar la vista
             for(movie in it){
-                movie.origen = "upcoming"
+                movie.origen = UPCOMING
                 repository.insert(movie)
             }
 
