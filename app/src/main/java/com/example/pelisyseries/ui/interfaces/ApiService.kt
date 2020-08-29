@@ -14,15 +14,25 @@ interface ApiService {
      * Api que devuelve las peliculas más populares
      * Solo es necesario pasar el appi_key
      * @param [apiKey] código que nos da la página de la api
-     * @param [language] lenguaje de las películas (Opcional)
-     * @param [page] cantidad de páginas que queremos obtener (Obcional)
      */
     @GET("movie/popular")
-    suspend fun getPopular(@Query("api_key") apiKey: String, @Query("language") language: String, @Query("page") page: Int, @Query("region") region: String): Result
-    @GET("movie/popular")
-    suspend fun getPopular(@Query("api_key") apiKey: String, @Query("page") page: Int): Result
-    @GET("movie/popular")
     suspend fun getPopular(@Query("api_key") apiKey: String): Result
+
+    /**
+     * Api que devuelve las peliculas mejor calificadas
+     * Solo es necesario pasar el appi_key
+     * @param [apiKey] código que nos da la página de la api
+     */
+    @GET("movie/top_rated")
+    suspend fun getTopRated(@Query("api_key") apiKey: String): Result
+
+    /**
+     * Api que devuelve las peliculas próximas a estrenar
+     * Solo es necesario pasar el appi_key
+     * @param [apiKey] código que nos da la página de la api
+     */
+    @GET("movie/upcoming")
+    suspend fun getUpcoming(@Query("api_key") apiKey: String): Result
 
     /**
      * Example = https://api.themoviedb.org/3/movie/550?api_key=a0de5a9fe43359e41cb94081d6bafc05

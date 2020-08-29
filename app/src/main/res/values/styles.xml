@@ -7,4 +7,24 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- Tab Design-->
+    <style name="TabHeaderTheme" parent="TextAppearance.Design.Tab">
+        <item name="tabGravity">fill</item>
+        <item name="tabIndicatorColor">@color/colorAccent</item>
+        <item name="tabIndicatorHeight">3dp</item>
+        <item name="tabMode">fixed</item>
+        <item name="tabMaxWidth">0dp</item>
+        <item name="tabSelectedTextColor">#313131</item>
+        <item name="tabBackground">@color/white</item>
+        <item name="tabTextAppearance">@style/AppTabTextAppearance</item>
+    </style>
+
+    <!-- Text Tab -->
+    <style name="AppTabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/gray_text_color</item>
+        <item name="textAllCaps">true</item>
+        <item name="android:fontFamily">@font/f_montserrat_light</item>
+    </style>
+
 </resources>

@@ -22,20 +22,38 @@ class ConnectToApi {
     private var service: ApiService = retrofit.create(ApiService::class.java)
 
     /**
-     * Esta función es la encargada de retornar el clima de hoy y los 5 días siguientes
-     * @param [lat] recibe la latitud de la ubicación
-     * @param [lon] recibe la longitud de la ubicación
-     * @return devuelve un mutableLiveData de la Base que es el objeto que mapea la respuesta
+     * Esta función es la encargada de retornar las movies mas populares
+     * @return devuelve un mutableLiveData que contiene un listado de movies populares
      * @sample getPopular("a0de5a9fe43359e41cb94081d6bafc05")
      */
     suspend fun getPopular(): MutableLiveData<List<Movie>> {
         var mutableLiveData = MutableLiveData<List<Movie>>()
         var response = service.getPopular(API_KEY)
-        try {
-            mutableLiveData.value = response.results
-        } catch (e: Exception){
-            e.printStackTrace()
-        }
+        mutableLiveData.value = response.results
+        return mutableLiveData
+    }
+
+    /**
+     * Esta función es la encargada de retornar las movies mejor calificadas
+     * @return devuelve un mutableLiveData que contiene un listado de movies mejor calificadas
+     * @sample getTopRated("a0de5a9fe43359e41cb94081d6bafc05")
+     */
+    suspend fun getTopRated(): MutableLiveData<List<Movie>> {
+        var mutableLiveData = MutableLiveData<List<Movie>>()
+        var response = service.getTopRated(API_KEY)
+        mutableLiveData.value = response.results
+        return mutableLiveData
+    }
+
+    /**
+     * Esta función es la encargada de retornar las movies próximas a estrenar
+     * @return devuelve un mutableLiveData que contiene un listado de movies próximas a estrenar
+     * @sample getUpcoming("a0de5a9fe43359e41cb94081d6bafc05")
+     */
+    suspend fun getUpcoming(): MutableLiveData<List<Movie>> {
+        var mutableLiveData = MutableLiveData<List<Movie>>()
+        var response = service.getUpcoming(API_KEY)
+        mutableLiveData.value = response.results
         return mutableLiveData
     }
 

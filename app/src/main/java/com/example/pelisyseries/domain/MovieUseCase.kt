@@ -1,21 +1,26 @@
 package com.example.pelisyseries.domain
 
-import com.example.pelisyseries.data.models.Movie
-import com.example.pelisyseries.data.service.ConnectToApi
+import com.example.pelisyseries.ui.PopularFragment
+import com.example.pelisyseries.ui.TopRatedFragment
+import com.example.pelisyseries.ui.UpcomingFragment
+import com.example.pelisyseries.ui.adapter.ItemViewPager
+import java.util.*
 
 /**
  * Caso de uso para las movies
  * @author Axel Sanchez
  */
 class MovieUseCase {
-    private val api = ConnectToApi.getInstance()
-
     /**
      * Recibe el mutableLiveData y obtiene su listado de movies
      * @return devuelve un listado de movies
      */
-    suspend fun getMovieList(): List<Movie> {
-        var response = api.getPopular()
-        return response.value!!
+    fun getMovieList(): MutableList<ItemViewPager> {
+        val listado: MutableList<ItemViewPager> = LinkedList()
+        listado.add(ItemViewPager("Popular", PopularFragment()))
+        listado.add(ItemViewPager("Top Rated", TopRatedFragment()))
+        listado.add(ItemViewPager("Upcoming", UpcomingFragment()))
+
+        return listado
     }
 }
