@@ -20,7 +20,6 @@ class MovieUseCase {
         listado.add(ItemViewPager("Popular", PopularFragment()))
         listado.add(ItemViewPager("Top Rated", TopRatedFragment()))
         listado.add(ItemViewPager("Upcoming", UpcomingFragment()))
-
         return listado
     }
 }

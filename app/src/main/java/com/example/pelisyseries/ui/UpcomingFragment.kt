@@ -9,7 +9,9 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pelisyseries.R
+import com.example.pelisyseries.data.TableMovie
 import com.example.pelisyseries.data.models.Movie
+import com.example.pelisyseries.data.repository.GenericRepository
 import com.example.pelisyseries.domain.UpcomingUseCase
 import com.example.pelisyseries.ui.adapter.MovieAdapter
 import com.example.pelisyseries.ui.customs.BaseFragment
@@ -27,6 +29,8 @@ import kotlinx.coroutines.launch
  */
 class UpcomingFragment: BaseFragment() {
 
+    private lateinit var repository: GenericRepository
+
     private lateinit var viewModel: UpcomingViewModel
 
     private lateinit var viewAdapter: MovieAdapter
@@ -36,6 +40,8 @@ class UpcomingFragment: BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        repository = GenericRepository.getInstance(context!!)
+
         viewModel = ViewModelProviders.of(requireActivity(), UpcomingViewModelFactory(UpcomingUseCase())).get(UpcomingViewModel::class.java)
 
         CoroutineScope(Main).launch {
@@ -52,6 +58,9 @@ class UpcomingFragment: BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        var movies = repository.getMovie(arrayOf(TableMovie.Columns.COLUMN_NAME_ORIGEN_LIST), arrayOf("upcoming"), null)
+        setAdapter(movies)
     }
 
     /**
@@ -60,14 +69,19 @@ class UpcomingFragment: BaseFragment() {
     private fun setupViewModelAndObserve() {
         val daysObserver = Observer<List<Movie>> {
             //Actualizar la vista
-            setAdapter(it)
+            for(movie in it){
+                movie.origen = "upcoming"
+                repository.insert(movie)
+            }
+
+            if(it.isNotEmpty()) setAdapter(it)
         }
         viewModel.getListMoviesLiveData().observe(this, daysObserver)
     }
 
-    private fun setAdapter(listItems: List<Movie>) {
+    private fun setAdapter(movies: List<Movie>) {
 
-        viewAdapter = MovieAdapter(listItems)
+        viewAdapter = MovieAdapter(movies)
 
         viewManager = GridLayoutManager(this.requireContext(), 2)
 

@@ -1,10 +1,10 @@
 package com.example.pelisyseries.data.models
 
 data class Movie(
+    val id: Int,
     val adult: Boolean,
     val backdrop_path: String,
     val genre_ids: List<Int>,
-    val id: Int,
     val original_language: String,
     val original_title: String,
     val overview: String,
@@ -14,5 +14,6 @@ data class Movie(
     val title: String,
     val video: Boolean,
     val vote_average: Double,
-    val vote_count: Int
+    val vote_count: Int,
+    var origen: String? = null
 )
