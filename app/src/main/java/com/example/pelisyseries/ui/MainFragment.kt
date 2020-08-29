@@ -27,14 +27,12 @@ import kotlinx.coroutines.launch
  */
 class MainFragment: BaseFragment() {
 
-    private lateinit var viewModel: MovieViewModel
+    private val viewModel: MovieViewModel by lazy { ViewModelProviders.of(requireActivity(), MovieViewModelFactory(MovieUseCase())).get(MovieViewModel::class.java) }
 
     override fun onBackPressFragment() = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(requireActivity(), MovieViewModelFactory(MovieUseCase())).get(MovieViewModel::class.java)
-
         viewModel.getListFragments()
 
         setupViewModelAndObserve()

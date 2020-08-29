@@ -31,7 +31,7 @@ class UpcomingFragment: BaseFragment() {
 
     private lateinit var repository: GenericRepository
 
-    private lateinit var viewModel: UpcomingViewModel
+    private val viewModel: UpcomingViewModel by lazy { ViewModelProviders.of(requireActivity(), UpcomingViewModelFactory(UpcomingUseCase())).get(UpcomingViewModel::class.java) }
 
     private lateinit var viewAdapter: MovieAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -41,8 +41,6 @@ class UpcomingFragment: BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         repository = GenericRepository.getInstance(context!!)
-
-        viewModel = ViewModelProviders.of(requireActivity(), UpcomingViewModelFactory(UpcomingUseCase())).get(UpcomingViewModel::class.java)
 
         CoroutineScope(Main).launch {
             viewModel.getListMovies()

@@ -30,7 +30,7 @@ class TopRatedFragment: BaseFragment() {
 
     private lateinit var repository: GenericRepository
 
-    private lateinit var viewModel: TopRatedViewModel
+    private val viewModel: TopRatedViewModel by lazy { ViewModelProviders.of(requireActivity(), TopRatedViewModelFactory(TopRatedUseCase())).get(TopRatedViewModel::class.java) }
 
     private lateinit var viewAdapter: MovieAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -40,8 +40,6 @@ class TopRatedFragment: BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         repository = GenericRepository.getInstance(context!!)
-
-        viewModel = ViewModelProviders.of(requireActivity(), TopRatedViewModelFactory(TopRatedUseCase())).get(TopRatedViewModel::class.java)
 
         CoroutineScope(Main).launch {
             viewModel.getListMovies()
