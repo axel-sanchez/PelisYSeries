@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.pelisyseries.data.models.Movie
+import com.example.pelisyseries.data.repository.GenericRepository
 import com.example.pelisyseries.domain.TopRatedUseCase
 
 /**
@@ -18,8 +19,8 @@ class TopRatedViewModel(private val topRatedUseCase: TopRatedUseCase) : ViewMode
         listData.value = listaMovies
     }
 
-    suspend fun getListMovies() {
-        setListData(topRatedUseCase.getMovieList())
+    suspend fun getListMovies(repository: GenericRepository) {
+        setListData(topRatedUseCase.getMovieList(repository))
     }
 
     fun getListMoviesLiveData(): LiveData<List<Movie>> {

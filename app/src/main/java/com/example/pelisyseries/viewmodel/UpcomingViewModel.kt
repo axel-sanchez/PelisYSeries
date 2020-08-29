@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.pelisyseries.data.models.Movie
+import com.example.pelisyseries.data.repository.GenericRepository
 import com.example.pelisyseries.domain.UpcomingUseCase
 
 /**
@@ -18,8 +19,8 @@ class UpcomingViewModel(private val upcomingUseCase: UpcomingUseCase) : ViewMode
         listData.value = listaMovies
     }
 
-    suspend fun getListMovies() {
-        setListData(upcomingUseCase.getMovieList())
+    suspend fun getListMovies(repository: GenericRepository) {
+        setListData(upcomingUseCase.getMovieList(repository))
     }
 
     fun getListMoviesLiveData(): LiveData<List<Movie>> {
