@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
@@ -84,7 +85,7 @@ class TopRatedFragment: BaseFragment() {
     }
 
     private fun setAdapter(movies: List<Movie>) {
-        viewAdapter = MovieAdapter(movies)
+        viewAdapter = MovieAdapter(movies) { itemClick(it) }
 
         viewManager = GridLayoutManager(this.requireContext(), 2)
 
@@ -98,5 +99,9 @@ class TopRatedFragment: BaseFragment() {
             adapter = viewAdapter
 
         }
+    }
+
+    private fun itemClick(item: Movie){
+        Toast.makeText(context, "Presionó ${item.original_title}", Toast.LENGTH_SHORT).show()
     }
 }

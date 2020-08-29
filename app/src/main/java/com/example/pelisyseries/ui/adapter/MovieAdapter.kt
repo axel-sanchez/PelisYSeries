@@ -18,13 +18,14 @@ const val BASE_URL_IMAGEN = "https://image.tmdb.org/t/p/w500"
  * Clase que adapta el recyclerview de [MainFragment]
  * @author Axel Sanchez
  */
-class MovieAdapter(var mItems: List<Movie>) : RecyclerView.Adapter<MovieAdapter.ViewHolder>(), Filterable {
+class MovieAdapter(var mItems: List<Movie>,
+                   var itemClick: (Movie) -> Unit) : RecyclerView.Adapter<MovieAdapter.ViewHolder>(), Filterable {
 
     private var mFilteredList = mItems
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(item: Movie) {
+        fun bind(item: Movie, itemClick: (Movie) -> Unit) {
             var image = itemView.findViewById<ImageView>(R.id.image)
             var title = itemView.findViewById<TextView>(R.id.title)
 
@@ -33,7 +34,9 @@ class MovieAdapter(var mItems: List<Movie>) : RecyclerView.Adapter<MovieAdapter.
                 .apply(RequestOptions.circleCropTransform())
                 .into(image)
 
-            title.text = item.original_title
+            title.text = item.title
+
+            image.setOnClickListener { itemClick(item) }
         }
     }
 
@@ -43,7 +46,7 @@ class MovieAdapter(var mItems: List<Movie>) : RecyclerView.Adapter<MovieAdapter.
     }
 
     // Replace the contents of a view (invoked by the layout manager)
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(mFilteredList[position])
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(mFilteredList[position], itemClick)
 
     // Return the size of your dataset (invoked by the layout manager)
     override fun getItemCount() = mFilteredList.size
