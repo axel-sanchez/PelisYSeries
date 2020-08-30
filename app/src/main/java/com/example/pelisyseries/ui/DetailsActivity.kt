@@ -2,6 +2,7 @@ package com.example.pelisyseries.ui
 
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.RequiresApi
@@ -30,6 +31,10 @@ class DetailsActivity : AppCompatActivity() {
 
     private lateinit var image: ImageView
     private lateinit var title: TextView
+    private lateinit var categoria: TextView
+    private lateinit var calificacion: TextView
+    private lateinit var edad: TextView
+    private lateinit var overview: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +44,10 @@ class DetailsActivity : AppCompatActivity() {
 
         image = findViewById(R.id.image)
         title = findViewById(R.id.title)
+        categoria = findViewById(R.id.categoria)
+        calificacion = findViewById(R.id.calificacion)
+        edad = findViewById(R.id.edad)
+        overview = findViewById(R.id.overview)
         image.transitionName = "main_poster"
 
         val idMovie = intent.extras!!.getInt("idMovie")
@@ -55,6 +64,12 @@ class DetailsActivity : AppCompatActivity() {
             //TODO: Actualizar la vista
 
             title.text = it.title
+
+            calificacion.text = it.vote_average.toString()
+            categoria.text = it.origen
+            overview.text = it.overview
+            if(it.adult) edad.visibility = View.VISIBLE
+            else edad.visibility = View.GONE
 
             Picasso.with(this)
                 .load("$BASE_URL_IMAGEN${it.poster_path}")
