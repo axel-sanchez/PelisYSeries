@@ -1,7 +1,5 @@
 package com.example.pelisyseries.domain
 
-import android.app.Application
-import android.content.Context
 import com.example.pelisyseries.data.TableMovie
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.repository.GenericRepository

@@ -1,10 +1,14 @@
 package com.example.pelisyseries.ui
 
+import android.app.ActivityOptions
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
@@ -29,7 +33,8 @@ import kotlinx.coroutines.launch
  * Primer fragment en mostrarse en el activity principal
  * @author Axel Sanchez
  */
-class TopRatedFragment: BaseFragment() {
+@RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+class TopRatedFragment : BaseFragment() {
 
     private lateinit var repository: GenericRepository
 
@@ -74,7 +79,7 @@ class TopRatedFragment: BaseFragment() {
             progress.visibility = View.GONE
             recyclerview.visibility = View.VISIBLE
 
-            for(movie in it){
+            for (movie in it) {
                 movie.origen = TOP_RATED
                 repository.insert(movie)
             }
@@ -101,7 +106,11 @@ class TopRatedFragment: BaseFragment() {
         }
     }
 
-    private fun itemClick(item: Movie){
-        Toast.makeText(context, "Presionó ${item.original_title}", Toast.LENGTH_SHORT).show()
+
+    private fun itemClick(item: Movie) {
+        val intent = Intent(context, DetailsActivity::class.java)
+        intent.putExtra("idMovie", item.id)
+        val options = ActivityOptions.makeSceneTransitionAnimation(activity, item.imageView, "main_poster")
+        startActivity(intent, options.toBundle())
     }
 }
