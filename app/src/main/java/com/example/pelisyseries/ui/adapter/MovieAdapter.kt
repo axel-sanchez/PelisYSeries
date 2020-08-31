@@ -83,10 +83,10 @@ class MovieAdapter(
 
                     for (item in mItems) {
 
-                        /*if (item.text.toLowerCase().contains(charString.toLowerCase())) {
+                        if (item.title.toLowerCase().contains(charString.toLowerCase())) {
 
                             filteredList.add(item)
-                        }*/
+                        }
                     }
                     mFilteredList = filteredList
                 }

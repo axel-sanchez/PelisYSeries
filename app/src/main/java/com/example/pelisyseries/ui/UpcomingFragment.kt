@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
@@ -46,6 +47,7 @@ class UpcomingFragment: BaseFragment() {
 
     private lateinit var progress: LottieAnimationView
     private lateinit var recyclerview: RecyclerView
+    private lateinit var searchView: SearchView
 
     override fun onBackPressFragment() = false
 
@@ -60,6 +62,7 @@ class UpcomingFragment: BaseFragment() {
 
         progress = view.findViewById(R.id.progress)
         recyclerview = view.findViewById(R.id.recyclerview)
+        searchView = view.findViewById(R.id.search)
 
         CoroutineScope(Main).launch {
             viewModel.getListMovies(repository)
@@ -74,6 +77,17 @@ class UpcomingFragment: BaseFragment() {
     private fun setupViewModelAndObserve() {
         val daysObserver = Observer<List<Movie>> {
             //Actualizar la vista
+
+            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    return false
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    viewAdapter.filter.filter(newText)
+                    return false
+                }
+            })
 
             progress.cancelAnimation()
             progress.visibility = View.GONE

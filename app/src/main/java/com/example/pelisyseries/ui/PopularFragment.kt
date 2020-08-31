@@ -4,10 +4,10 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.view.inputmethod.EditorInfo
 import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
@@ -25,6 +25,7 @@ import com.example.pelisyseries.viewmodel.PopularViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
+
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 /**
@@ -46,6 +47,7 @@ class PopularFragment: BaseFragment() {
 
     private lateinit var progress: LottieAnimationView
     private lateinit var recyclerview: RecyclerView
+    private lateinit var searchView: SearchView
 
     override fun onBackPressFragment() = false
 
@@ -65,6 +67,7 @@ class PopularFragment: BaseFragment() {
 
         progress = view.findViewById(R.id.progress)
         recyclerview = view.findViewById(R.id.recyclerview)
+        searchView = view.findViewById(R.id.search)
 
         CoroutineScope(Main).launch {
             viewModel.getListMovies(repository)
@@ -79,6 +82,17 @@ class PopularFragment: BaseFragment() {
     private fun setupViewModelAndObserve() {
         val daysObserver = Observer<List<Movie>> {
             //Actualizar la vista
+
+            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    return false
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    viewAdapter.filter.filter(newText)
+                    return false
+                }
+            })
 
             progress.cancelAnimation()
             progress.visibility = View.GONE
@@ -115,7 +129,12 @@ class PopularFragment: BaseFragment() {
     private fun itemClick(item: Movie){
         val intent = Intent(context, DetailsActivity::class.java)
         intent.putExtra("idMovie", item.id)
-        val options = ActivityOptions.makeSceneTransitionAnimation(activity, item.imageView, "main_poster")
+        val options = ActivityOptions.makeSceneTransitionAnimation(
+            activity,
+            item.imageView,
+            "main_poster"
+        )
         startActivity(intent, options.toBundle())
     }
+
 }
