@@ -34,7 +34,10 @@ interface ApiService {
     @GET("movie/upcoming")
     suspend fun getUpcoming(@Query("api_key") apiKey: String): Result
 
-    /**
+    @GET("search/movie")
+    suspend fun search(@Query("api_key") apiKey: String, @Query("query") query: String): Result
+
+    /*
      * Example = https://api.themoviedb.org/3/movie/550?api_key=a0de5a9fe43359e41cb94081d6bafc05
      * Token = eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhMGRlNWE5ZmU0MzM1OWU0MWNiOTQwODFkNmJhZmMwNSIsInN1YiI6IjVmNDk4MjNlMzliNmMzMDAzNjk2ODA0MCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.hsvg8iJYNb_926YkxtF59ogCUNxXvA8NDAZObZK00ok
      */

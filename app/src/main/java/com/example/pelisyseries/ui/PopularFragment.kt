@@ -5,16 +5,21 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.*
-import android.view.inputmethod.EditorInfo
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
+import androidx.cardview.widget.CardView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.example.pelisyseries.R
+import com.example.pelisyseries.data.TableMovie
 import com.example.pelisyseries.data.models.Movie
+import com.example.pelisyseries.data.repository.GLOBAL
 import com.example.pelisyseries.data.repository.GenericRepository
 import com.example.pelisyseries.data.repository.POPULAR
 import com.example.pelisyseries.domain.PopularUseCase
@@ -22,6 +27,7 @@ import com.example.pelisyseries.ui.adapter.MovieAdapter
 import com.example.pelisyseries.ui.customs.BaseFragment
 import com.example.pelisyseries.viewmodel.PopularViewModel
 import com.example.pelisyseries.viewmodel.PopularViewModelFactory
+import kotlinx.android.synthetic.main.fragment_movies.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
@@ -48,6 +54,9 @@ class PopularFragment: BaseFragment() {
     private lateinit var progress: LottieAnimationView
     private lateinit var recyclerview: RecyclerView
     private lateinit var searchView: SearchView
+    private lateinit var emptyState: CardView
+    private lateinit var emptyStateFilter: LinearLayout
+    private lateinit var searchOnline: Button
 
     override fun onBackPressFragment() = false
 
@@ -68,6 +77,9 @@ class PopularFragment: BaseFragment() {
         progress = view.findViewById(R.id.progress)
         recyclerview = view.findViewById(R.id.recyclerview)
         searchView = view.findViewById(R.id.search)
+        emptyState = view.findViewById(R.id.empty_state)
+        emptyStateFilter = view.findViewById(R.id.empty_state_filter)
+        searchOnline = view.findViewById(R.id.search_online)
 
         CoroutineScope(Main).launch {
             viewModel.getListMovies(repository)
@@ -83,14 +95,36 @@ class PopularFragment: BaseFragment() {
         val daysObserver = Observer<List<Movie>> {
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
+                    if (viewAdapter.getItems().isNullOrEmpty()) {
+                        emptyState.visibility = View.VISIBLE
+                        emptyStateFilter.visibility = View.VISIBLE
+                    } else {
+                        emptyState.visibility = View.GONE
+                        emptyStateFilter.visibility = View.GONE
+                    }
                     return false
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
+                    emptyState.visibility = View.GONE
+                    emptyStateFilter.visibility = View.GONE
                     viewAdapter.filter.filter(newText)
                     return false
                 }
             })
+
+            searchOnline.setOnClickListener {
+                Toast.makeText(context, "Búsqueda online", Toast.LENGTH_SHORT).show()
+                CoroutineScope(Main).launch {
+                    viewModel.getListMoviesFromSearch(repository, searchView.query.toString())
+                }
+            }
+
+            searchView.setOnCloseListener {
+                emptyState.visibility = View.GONE
+                emptyStateFilter.visibility = View.GONE
+                false
+            }
 
             progress.cancelAnimation()
             progress.visibility = View.GONE
@@ -103,7 +137,29 @@ class PopularFragment: BaseFragment() {
 
             setAdapter(it)
         }
+
+        val searchObserver = Observer<List<Movie>> {
+            emptyState.visibility = View.GONE
+            emptyStateFilter.visibility = View.GONE
+            progress.cancelAnimation()
+            progress.visibility = View.GONE
+            recyclerview.visibility = View.VISIBLE
+
+            searchView.setOnCloseListener {
+                setAdapter(repository.getMovie(arrayOf(TableMovie.Columns.COLUMN_NAME_ORIGEN_LIST), arrayOf(POPULAR), null))
+                false
+            }
+
+            for(movie in it){
+                movie.origen = GLOBAL
+                repository.insert(movie)
+            }
+
+            setAdapter(it)
+        }
+
         viewModel.getListMoviesLiveData().observe(viewLifecycleOwner, daysObserver)
+        viewModel.getListMoviesLiveDataFromSearch().observe(viewLifecycleOwner, searchObserver)
     }
 
     private fun setAdapter(movies: List<Movie>) {
@@ -134,5 +190,4 @@ class PopularFragment: BaseFragment() {
         )
         startActivity(intent, options.toBundle())
     }
-
 }

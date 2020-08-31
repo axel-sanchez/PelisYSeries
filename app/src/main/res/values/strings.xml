@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">PelisYSeries</string>
+    <string name="not_found_movies">No se encontraron Películas con los filtros que seleccionaste.</string>
 </resources>

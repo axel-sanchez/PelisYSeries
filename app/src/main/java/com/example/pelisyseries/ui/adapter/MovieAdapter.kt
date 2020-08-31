@@ -106,4 +106,8 @@ class MovieAdapter(
     fun setItems(newItems: List<Movie>) {
         mItems = newItems
     }
+
+    fun getItems(): List<Movie> {
+        return mFilteredList
+    }
 }

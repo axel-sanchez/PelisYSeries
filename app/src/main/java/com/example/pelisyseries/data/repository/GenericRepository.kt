@@ -11,6 +11,7 @@ import com.example.pelisyseries.data.models.Movie
 const val POPULAR = "popular"
 const val TOP_RATED = "top_rated"
 const val UPCOMING = "upcoming"
+const val GLOBAL = "global"
 class GenericRepository {
 
     private lateinit var dbHelper: Database

@@ -5,7 +5,6 @@ import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.ui.interfaces.ApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.Exception
 
 const val BASE_URL = "https://api.themoviedb.org/3/"
 const val API_KEY = "a0de5a9fe43359e41cb94081d6bafc05" //(AUTH V3)
@@ -53,6 +52,14 @@ class ConnectToApi {
     suspend fun getUpcoming(): MutableLiveData<List<Movie>> {
         var mutableLiveData = MutableLiveData<List<Movie>>()
         var response = service.getUpcoming(API_KEY)
+        mutableLiveData.value = response.results
+        return mutableLiveData
+    }
+
+    suspend fun search(query: String): MutableLiveData<List<Movie>> {
+        var mutableLiveData = MutableLiveData<List<Movie>>()
+        var response = service.search(API_KEY, query)
+        println("devolvio: ${response.results}")
         mutableLiveData.value = response.results
         return mutableLiveData
     }
