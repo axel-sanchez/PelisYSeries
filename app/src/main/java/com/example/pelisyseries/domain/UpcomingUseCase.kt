@@ -29,4 +29,9 @@ class UpcomingUseCase {
             movies
         }
     }
+
+    suspend fun getMovieListFromSearch(repository: GenericRepository, query: String): List<Movie> {
+        var response = api.search(query)
+        return response.value!!
+    }
 }

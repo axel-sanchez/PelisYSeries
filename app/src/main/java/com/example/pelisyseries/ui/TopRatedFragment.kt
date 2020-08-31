@@ -7,9 +7,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
+import androidx.cardview.widget.CardView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
@@ -18,7 +21,9 @@ import com.airbnb.lottie.LottieAnimationView
 import com.example.pelisyseries.R
 import com.example.pelisyseries.data.TableMovie
 import com.example.pelisyseries.data.models.Movie
+import com.example.pelisyseries.data.repository.GLOBAL
 import com.example.pelisyseries.data.repository.GenericRepository
+import com.example.pelisyseries.data.repository.POPULAR
 import com.example.pelisyseries.data.repository.TOP_RATED
 import com.example.pelisyseries.domain.TopRatedUseCase
 import com.example.pelisyseries.ui.adapter.MovieAdapter
@@ -39,7 +44,12 @@ class TopRatedFragment : BaseFragment() {
 
     private lateinit var repository: GenericRepository
 
-    private val viewModel: TopRatedViewModel by lazy { ViewModelProviders.of(requireActivity(), TopRatedViewModelFactory(TopRatedUseCase())).get(TopRatedViewModel::class.java) }
+    private val viewModel: TopRatedViewModel by lazy {
+        ViewModelProviders.of(
+            requireActivity(),
+            TopRatedViewModelFactory(TopRatedUseCase())
+        ).get(TopRatedViewModel::class.java)
+    }
 
     private lateinit var viewAdapter: MovieAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -47,10 +57,17 @@ class TopRatedFragment : BaseFragment() {
     private lateinit var progress: LottieAnimationView
     private lateinit var recyclerview: RecyclerView
     private lateinit var searchView: SearchView
+    private lateinit var emptyState: CardView
+    private lateinit var emptyStateFilter: LinearLayout
+    private lateinit var searchOnline: Button
 
     override fun onBackPressFragment() = false
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_movies, container, false)
     }
@@ -63,6 +80,9 @@ class TopRatedFragment : BaseFragment() {
         progress = view.findViewById(R.id.progress)
         recyclerview = view.findViewById(R.id.recyclerview)
         searchView = view.findViewById(R.id.search)
+        emptyState = view.findViewById(R.id.empty_state)
+        emptyStateFilter = view.findViewById(R.id.empty_state_filter)
+        searchOnline = view.findViewById(R.id.search_online)
 
         CoroutineScope(Main).launch {
             viewModel.getListMovies(repository)
@@ -78,18 +98,43 @@ class TopRatedFragment : BaseFragment() {
         val daysObserver = Observer<List<Movie>> {
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
+                    if (viewAdapter.getItems().isNullOrEmpty()) {
+                        emptyState.showView(true)
+                        emptyStateFilter.showView(true)
+                    } else {
+                        emptyState.showView(false)
+                        emptyStateFilter.showView(false)
+                    }
                     return false
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
+                    emptyState.showView(false)
+                    emptyStateFilter.showView(false)
                     viewAdapter.filter.filter(newText)
                     return false
                 }
             })
 
+            searchOnline.setOnClickListener {
+                CoroutineScope(Main).launch {
+                    viewModel.getListMoviesFromSearch(repository, searchView.query.toString())
+                }
+                emptyState.showView(false)
+                emptyStateFilter.showView(false)
+                progress.playAnimation()
+                progress.showView(true)
+            }
+
+            searchView.setOnCloseListener {
+                emptyState.showView(false)
+                emptyStateFilter.showView(false)
+                false
+            }
+
             progress.cancelAnimation()
-            progress.visibility = View.GONE
-            recyclerview.visibility = View.VISIBLE
+            progress.showView(false)
+            recyclerview.showView(true)
 
             for (movie in it) {
                 movie.origen = TOP_RATED
@@ -98,7 +143,35 @@ class TopRatedFragment : BaseFragment() {
 
             setAdapter(it)
         }
+
+        val searchObserver = Observer<List<Movie>> {
+            emptyState.showView(false)
+            emptyStateFilter.showView(false)
+            progress.cancelAnimation()
+            progress.showView(false)
+            recyclerview.showView(true)
+
+            searchView.setOnCloseListener {
+                setAdapter(
+                    repository.getMovie(
+                        arrayOf(TableMovie.Columns.COLUMN_NAME_ORIGEN_LIST), arrayOf(
+                            TOP_RATED
+                        ), null
+                    )
+                )
+                false
+            }
+
+            for (movie in it) {
+                movie.origen = GLOBAL
+                repository.insert(movie)
+            }
+
+            setAdapter(it)
+        }
+
         viewModel.getListMoviesLiveData().observe(viewLifecycleOwner, daysObserver)
+        viewModel.getListMoviesLiveDataFromSearch().observe(viewLifecycleOwner, searchObserver)
     }
 
     private fun setAdapter(movies: List<Movie>) {
@@ -122,7 +195,8 @@ class TopRatedFragment : BaseFragment() {
     private fun itemClick(item: Movie) {
         val intent = Intent(context, DetailsActivity::class.java)
         intent.putExtra("idMovie", item.id)
-        val options = ActivityOptions.makeSceneTransitionAnimation(activity, item.imageView, "main_poster")
+        val options =
+            ActivityOptions.makeSceneTransitionAnimation(activity, item.imageView, "main_poster")
         startActivity(intent, options.toBundle())
     }
 }
