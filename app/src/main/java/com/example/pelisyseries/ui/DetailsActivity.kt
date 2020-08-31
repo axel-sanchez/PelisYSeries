@@ -35,6 +35,7 @@ class DetailsActivity : AppCompatActivity() {
     private lateinit var calificacion: TextView
     private lateinit var edad: TextView
     private lateinit var overview: TextView
+    private lateinit var date: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +49,7 @@ class DetailsActivity : AppCompatActivity() {
         calificacion = findViewById(R.id.calificacion)
         edad = findViewById(R.id.edad)
         overview = findViewById(R.id.overview)
+        date = findViewById(R.id.date)
         image.transitionName = "main_poster"
 
         val idMovie = intent.extras!!.getInt("idMovie")
@@ -66,6 +68,7 @@ class DetailsActivity : AppCompatActivity() {
             calificacion.text = it.vote_average.toString()
             categoria.text = it.origen
             overview.text = it.overview
+            date.text = it.release_date.substring(0, 4)
             if(it.adult) edad.visibility = View.VISIBLE
             else edad.visibility = View.GONE
 

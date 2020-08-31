@@ -96,39 +96,42 @@ class PopularFragment: BaseFragment() {
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     if (viewAdapter.getItems().isNullOrEmpty()) {
-                        emptyState.visibility = View.VISIBLE
-                        emptyStateFilter.visibility = View.VISIBLE
+                        emptyState.showView(true)
+                        emptyStateFilter.showView(true)
                     } else {
-                        emptyState.visibility = View.GONE
-                        emptyStateFilter.visibility = View.GONE
+                        emptyState.showView(false)
+                        emptyStateFilter.showView(false)
                     }
                     return false
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    emptyState.visibility = View.GONE
-                    emptyStateFilter.visibility = View.GONE
+                    emptyState.showView(false)
+                    emptyStateFilter.showView(false)
                     viewAdapter.filter.filter(newText)
                     return false
                 }
             })
 
             searchOnline.setOnClickListener {
-                Toast.makeText(context, "Búsqueda online", Toast.LENGTH_SHORT).show()
                 CoroutineScope(Main).launch {
                     viewModel.getListMoviesFromSearch(repository, searchView.query.toString())
                 }
+                emptyState.showView(false)
+                emptyStateFilter.showView(false)
+                progress.playAnimation()
+                progress.showView(true)
             }
 
             searchView.setOnCloseListener {
-                emptyState.visibility = View.GONE
-                emptyStateFilter.visibility = View.GONE
+                emptyState.showView(false)
+                emptyStateFilter.showView(false)
                 false
             }
 
             progress.cancelAnimation()
-            progress.visibility = View.GONE
-            recyclerview.visibility = View.VISIBLE
+            progress.showView(false)
+            recyclerview.showView(true)
 
             for(movie in it){
                 movie.origen = POPULAR
@@ -139,11 +142,11 @@ class PopularFragment: BaseFragment() {
         }
 
         val searchObserver = Observer<List<Movie>> {
-            emptyState.visibility = View.GONE
-            emptyStateFilter.visibility = View.GONE
+            emptyState.showView(false)
+            emptyStateFilter.showView(false)
             progress.cancelAnimation()
-            progress.visibility = View.GONE
-            recyclerview.visibility = View.VISIBLE
+            progress.showView(false)
+            recyclerview.showView(true)
 
             searchView.setOnCloseListener {
                 setAdapter(repository.getMovie(arrayOf(TableMovie.Columns.COLUMN_NAME_ORIGEN_LIST), arrayOf(POPULAR), null))
