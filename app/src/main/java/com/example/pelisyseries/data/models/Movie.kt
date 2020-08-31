@@ -2,6 +2,10 @@ package com.example.pelisyseries.data.models
 
 import android.widget.ImageView
 
+/**
+ * Clase que almacena las peliculas que se encuentran en [Result]
+ * @author Axel Sanchez
+ */
 data class Movie(
     val id: Int,
     val adult: Boolean,

@@ -14,8 +14,8 @@ import java.util.*
  */
 class MovieUseCase {
     /**
-     * Recibe el mutableLiveData y obtiene su listado de movies
-     * @return devuelve un listado de movies
+     * Recibe el mutableLiveData y obtiene su listado de movies para crear los [ItemViewPager]
+     * @return devuelve un listado de [ItemViewPager]
      */
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun getMovieList(): MutableList<ItemViewPager> {

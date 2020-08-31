@@ -36,7 +36,7 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 
 /**
- * Primer fragment en mostrarse en el activity principal
+ * Segundo fragment en mostrarse en el activity principal
  * @author Axel Sanchez
  */
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -93,6 +93,7 @@ class TopRatedFragment : BaseFragment() {
 
     /**
      * Configuramos el viewModel para estar a la escucha de nuestra petición a la api de peliculas
+     * Y también va a estar a la escucha de cuando buscamos el video de la pelicula
      */
     private fun setupViewModelAndObserve() {
         val daysObserver = Observer<List<Movie>> {
@@ -118,7 +119,7 @@ class TopRatedFragment : BaseFragment() {
 
             searchOnline.setOnClickListener {
                 CoroutineScope(Main).launch {
-                    viewModel.getListMoviesFromSearch(repository, searchView.query.toString())
+                    viewModel.getListMoviesFromSearch(searchView.query.toString())
                 }
                 emptyState.showView(false)
                 emptyStateFilter.showView(false)
@@ -174,6 +175,10 @@ class TopRatedFragment : BaseFragment() {
         viewModel.getListMoviesLiveDataFromSearch().observe(viewLifecycleOwner, searchObserver)
     }
 
+    /**
+     * Adaptamos el recyclerview de peliculas
+     * @param [movies] listado de peliculas
+     */
     private fun setAdapter(movies: List<Movie>) {
         viewAdapter = MovieAdapter(movies) { itemClick(it) }
 
@@ -191,6 +196,10 @@ class TopRatedFragment : BaseFragment() {
         }
     }
 
+    /**
+     * Abro el activity con los detalles de cada pelicula
+     * @param [item] le paso la pelicula
+     */
     private fun itemClick(item: Movie) {
         val intent = Intent(context, DetailsActivity::class.java)
         intent.putExtra("idMovie", item.id)

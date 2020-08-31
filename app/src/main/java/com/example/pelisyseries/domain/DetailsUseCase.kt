@@ -6,7 +6,7 @@ import com.example.pelisyseries.data.repository.GenericRepository
 import com.example.pelisyseries.data.service.ConnectToApi
 
 /**
- * Caso de uso para las movies populares
+ * Caso de uso para el detalle de las peliculas
  * @author Axel Sanchez
  */
 class DetailsUseCase {

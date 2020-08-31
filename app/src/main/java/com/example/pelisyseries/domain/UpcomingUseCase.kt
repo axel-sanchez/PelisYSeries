@@ -16,6 +16,7 @@ class UpcomingUseCase {
 
     /**
      * Recibe el mutableLiveData y obtiene su listado de movies próximas a estrenar
+     * @param [repository] objeto que manipula la database
      * @return devuelve un listado de movies próximas a estrenar
      */
     suspend fun getMovieList(repository: GenericRepository): List<Movie> {
@@ -29,8 +30,12 @@ class UpcomingUseCase {
             movies
         }
     }
-
-    suspend fun getMovieListFromSearch(repository: GenericRepository, query: String): List<Movie> {
+    /**
+     * Obtiene las peliculas que corresponden con la búsqueda
+     * @param [query] nombre de la pelicula
+     * @return devuelve un listado de movies que corresponden con la búsqueda
+     */
+    suspend fun getMovieListFromSearch(query: String): List<Movie> {
         var response = api.search(query)
         return response.value!!
     }

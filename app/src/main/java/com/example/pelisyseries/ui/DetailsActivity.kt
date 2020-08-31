@@ -31,6 +31,10 @@ import kotlinx.coroutines.launch
 
 const val API_KEY_YOUTUBE = "AIzaSyCQ6v66wKoSuumIAHFzEUfan3MIS9gpRRc"
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+/**
+ * Activity que muestra los detalles de una pelicula
+ * @author Axel Sanchez
+ */
 class DetailsActivity : YouTubeBaseActivity() {
 
     private lateinit var repository: GenericRepository
@@ -76,6 +80,9 @@ class DetailsActivity : YouTubeBaseActivity() {
         setupViewModelAndObserve()
     }
 
+    /**
+     * Creo un observer para que este observando al [DetailsViewModel] y cuando obtenga los datos actualizar la vista
+     */
     private fun setupViewModelAndObserve() {
         val daysObserver = Observer<Movie> {
             title.text = it.title

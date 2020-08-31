@@ -12,15 +12,22 @@ const val POPULAR = "popular"
 const val TOP_RATED = "top_rated"
 const val UPCOMING = "upcoming"
 const val GLOBAL = "global"
+
+/**
+ * Clase utilizada para obtener y modificar datos de la database
+ * @author Axel Sanchez
+ */
 class GenericRepository {
 
     private lateinit var dbHelper: Database
     lateinit var db: SQLiteDatabase
 
     companion object {
-        //Utilizo el patrón singleton
         private var instance: GenericRepository? = null
 
+        /**
+         * Utilizo Singleton para crear solo una instancia de esta clase
+         */
         fun getInstance(context: Context): GenericRepository {
             if (instance == null) {
                 instance = GenericRepository()
@@ -31,7 +38,11 @@ class GenericRepository {
         }
     }
 
-    //Insertamos una movie
+    /**
+     * Insertar una [Movie] en la database
+     * @param [item] recibe una Movie
+     * @return devuelve el id del registro insertado, si falla devuelve un -1
+     */
     fun insert(item: Movie): Long {
         return try {
             var idsGenre = ""
@@ -63,6 +74,11 @@ class GenericRepository {
         }
     }
 
+    /**
+     * Actualiza una [Movie] en la database
+     * @param [item] recibe una Movie
+     * @return devuelve el id del registro actualizado, si falla devuelve un -1
+     */
     fun update(item: Movie): Int {
         val db = dbHelper.writableDatabase
 
@@ -97,7 +113,13 @@ class GenericRepository {
         return db.updateWithOnConflict(TableMovie.Columns.TABLE_NAME, values, selection, selectionArgs, SQLiteDatabase.CONFLICT_REPLACE)
     }
 
-
+    /**
+     * Obtener una [Movie] de la database
+     * @param [whereColumns] recibe un listado de nombres de campos que quiero filtrar
+     * @param [whereArgs] recibe un listado de los resultados a comparar con [whereColumns]
+     * @param [orderByColumn] recibe el nombre de la tabla con la que vamos a ordenar los resultados
+     * @return devuelve un mutableList de peliculas
+     */
     fun getMovie(whereColumns: Array<String>?, whereArgs: Array<String>?, orderByColumn: String?): MutableList<Movie> {
         val db = dbHelper.readableDatabase
 
@@ -165,6 +187,11 @@ class GenericRepository {
         return items
     }
 
+    /**
+     * Elimina una [Movie] de la database
+     * @param [id] recibe el id de la pelicula
+     * @return devuelve el id del registro eliminado, si falla devuelve un -1
+     */
     fun deleteMovie(id: Long): Int {
         val db = dbHelper.writableDatabase
         // Define 'where' part of query.

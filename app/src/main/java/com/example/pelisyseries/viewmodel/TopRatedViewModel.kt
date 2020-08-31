@@ -28,8 +28,8 @@ class TopRatedViewModel(private val topRatedUseCase: TopRatedUseCase) : ViewMode
         setListData(topRatedUseCase.getMovieList(repository))
     }
 
-    suspend fun getListMoviesFromSearch(repository: GenericRepository, query: String) {
-        setListDataFromSearch(topRatedUseCase.getMovieListFromSearch(repository, query))
+    suspend fun getListMoviesFromSearch(query: String) {
+        setListDataFromSearch(topRatedUseCase.getMovieListFromSearch(query))
     }
 
     fun getListMoviesLiveData(): LiveData<List<Movie>> {

@@ -47,7 +47,7 @@ class MainFragment: BaseFragment() {
     }
 
     /**
-     * Configuramos el viewModel para estar a la escucha de nuestro listado de Fragments
+     * Configuramos el [MovieViewModel] para estar a la escucha de nuestro listado de Fragments
      */
     private fun setupViewModelAndObserve() {
         val daysObserver = Observer<MutableList<ItemViewPager>> {
@@ -57,14 +57,21 @@ class MainFragment: BaseFragment() {
         viewModel.getListMoviesLiveData().observe(this, daysObserver)
     }
 
+    /**
+     * Adaptamos el viewPager con los 3 fragments que contienen los listados de peliculas
+     * @param [listado] un mutableLiveData que contiene los [ItemViewPager]
+     */
     private fun setAdapter(listado: MutableList<ItemViewPager>) {
         val adapter = ViewPageAdapter(childFragmentManager, listado)
         viewpager.adapter = adapter
         tabs.setupWithViewPager(viewpager)
-        //viewpager.pageMargin = -64
     }
 
     companion object{
+        /**
+         * Utilizo esta variable para crear el viewModel de [DetailsActivity]
+         * El activity de Youtube no me dejaba usar this
+         */
         lateinit var copyFragment: Fragment
     }
 }

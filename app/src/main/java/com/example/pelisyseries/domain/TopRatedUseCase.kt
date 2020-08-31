@@ -16,6 +16,7 @@ class TopRatedUseCase {
 
     /**
      * Recibe el mutableLiveData y obtiene su listado de movies mejores calificadas
+     * @param [repository] objeto que manipula la database
      * @return devuelve un listado de movies mejores calificadas
      */
     suspend fun getMovieList(repository: GenericRepository): List<Movie> {
@@ -29,7 +30,12 @@ class TopRatedUseCase {
         }
     }
 
-    suspend fun getMovieListFromSearch(repository: GenericRepository, query: String): List<Movie> {
+    /**
+     * Obtiene las peliculas que corresponden con la búsqueda
+     * @param [query] nombre de la pelicula
+     * @return devuelve un listado de movies que coinciden con la búsqueda
+     */
+    suspend fun getMovieListFromSearch(query: String): List<Movie> {
         var response = api.search(query)
         return response.value!!
     }

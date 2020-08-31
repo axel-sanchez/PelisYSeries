@@ -28,8 +28,8 @@ class PopularViewModel(private val popularUseCase: PopularUseCase) : ViewModel()
         setListData(popularUseCase.getMovieList(repository))
     }
 
-    suspend fun getListMoviesFromSearch(repository: GenericRepository, query: String) {
-        setListDataFromSearch(popularUseCase.getMovieListFromSearch(repository, query))
+    suspend fun getListMoviesFromSearch(query: String) {
+        setListDataFromSearch(popularUseCase.getMovieListFromSearch(query))
     }
 
     fun getListMoviesLiveData(): LiveData<List<Movie>> {

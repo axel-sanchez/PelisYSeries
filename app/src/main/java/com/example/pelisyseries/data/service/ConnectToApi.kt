@@ -23,8 +23,7 @@ class ConnectToApi {
 
     /**
      * Esta función es la encargada de retornar las movies mas populares
-     * @return devuelve un mutableLiveData que contiene un listado de movies populares
-     * @sample getPopular("a0de5a9fe43359e41cb94081d6bafc05")
+     * @return devuelve un mutableLiveData que contiene un listado de [Movie] populares
      */
     suspend fun getPopular(): MutableLiveData<List<Movie>> {
         var mutableLiveData = MutableLiveData<List<Movie>>()
@@ -35,8 +34,7 @@ class ConnectToApi {
 
     /**
      * Esta función es la encargada de retornar las movies mejor calificadas
-     * @return devuelve un mutableLiveData que contiene un listado de movies mejor calificadas
-     * @sample getTopRated("a0de5a9fe43359e41cb94081d6bafc05")
+     * @return devuelve un mutableLiveData que contiene un listado de [Movie] mejor calificadas
      */
     suspend fun getTopRated(): MutableLiveData<List<Movie>> {
         var mutableLiveData = MutableLiveData<List<Movie>>()
@@ -47,8 +45,7 @@ class ConnectToApi {
 
     /**
      * Esta función es la encargada de retornar las movies próximas a estrenar
-     * @return devuelve un mutableLiveData que contiene un listado de movies próximas a estrenar
-     * @sample getUpcoming("a0de5a9fe43359e41cb94081d6bafc05")
+     * @return devuelve un mutableLiveData que contiene un listado de [Movie] próximas a estrenar
      */
     suspend fun getUpcoming(): MutableLiveData<List<Movie>> {
         var mutableLiveData = MutableLiveData<List<Movie>>()
@@ -57,6 +54,11 @@ class ConnectToApi {
         return mutableLiveData
     }
 
+    /**
+     * Esta función es la encargada de retornar las movies que coinciden con la búsqueda
+     * @param [query] nombre de la pelicula
+     * @return devuelve un mutableLiveData que contiene un listado de [Movie] que coinciden con la búsqueda
+     */
     suspend fun search(query: String): MutableLiveData<List<Movie>> {
         var mutableLiveData = MutableLiveData<List<Movie>>()
         var response = service.search(API_KEY, query)
@@ -65,6 +67,11 @@ class ConnectToApi {
         return mutableLiveData
     }
 
+    /**
+     * Esta función es la encargada de retornar el vídeo de una pelicula
+     * @param [id] id de la pelicula
+     * @return devuelve un mutableLiveData que contiene un listado de [Video]
+     */
     suspend fun getVideo(id: Int): MutableLiveData<List<Video>> {
         var mutableLiveData = MutableLiveData<List<Video>>()
         var response = service.getVideo(id.toString(), API_KEY)

@@ -15,6 +15,7 @@ class PopularUseCase {
 
     /**
      * Recibe el mutableLiveData y obtiene su listado de movies populares
+     * @param [repository] objeto que sirve para hacer llamadas a la database
      * @return devuelve un listado de movies populares
      */
     suspend fun getMovieList(repository: GenericRepository): List<Movie> {
@@ -29,7 +30,12 @@ class PopularUseCase {
         }
     }
 
-    suspend fun getMovieListFromSearch(repository: GenericRepository, query: String): List<Movie> {
+    /**
+     * Obtiene las peliculas que corresponden a la búsqueda
+     * @param [query] nombre de la pelicula
+     * @return devuelve un listado de movies encontradas
+     */
+    suspend fun getMovieListFromSearch(query: String): List<Movie> {
         var response = api.search(query)
         return response.value!!
     }

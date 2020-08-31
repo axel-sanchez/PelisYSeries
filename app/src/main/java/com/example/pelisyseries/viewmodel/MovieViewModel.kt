@@ -1,5 +1,7 @@
 package com.example.pelisyseries.viewmodel
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,6 +20,7 @@ class MovieViewModel(private val movieUseCase: MovieUseCase) : ViewModel() {
         listData.value = listaMovies
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun getListFragments() {
         setListData(movieUseCase.getMovieList())
     }

@@ -28,8 +28,8 @@ class UpcomingViewModel(private val upcomingUseCase: UpcomingUseCase) : ViewMode
         setListData(upcomingUseCase.getMovieList(repository))
     }
 
-    suspend fun getListMoviesFromSearch(repository: GenericRepository, query: String) {
-        setListDataFromSearch(upcomingUseCase.getMovieListFromSearch(repository, query))
+    suspend fun getListMoviesFromSearch(query: String) {
+        setListDataFromSearch(upcomingUseCase.getMovieListFromSearch(query))
     }
 
     fun getListMoviesLiveData(): LiveData<List<Movie>> {

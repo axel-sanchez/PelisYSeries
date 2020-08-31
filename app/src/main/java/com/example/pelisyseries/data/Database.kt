@@ -5,6 +5,10 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.provider.BaseColumns
 
+/**
+ * Clase que crea la base de datos y contiene los nombres de las tablas para su mejor acceso
+ * @author Axel Sanchez
+ */
 class Database(context: Context): SQLiteOpenHelper(context.applicationContext, DATABASE_NAME, null, DATABASE_VERSION){
 
     companion object {
