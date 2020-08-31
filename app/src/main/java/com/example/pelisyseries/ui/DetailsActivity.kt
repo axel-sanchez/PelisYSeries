@@ -61,8 +61,6 @@ class DetailsActivity : AppCompatActivity() {
 
     private fun setupViewModelAndObserve() {
         val daysObserver = Observer<Movie> {
-            //TODO: Actualizar la vista
-
             title.text = it.title
 
             calificacion.text = it.vote_average.toString()

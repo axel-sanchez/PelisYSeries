@@ -76,8 +76,6 @@ class TopRatedFragment : BaseFragment() {
      */
     private fun setupViewModelAndObserve() {
         val daysObserver = Observer<List<Movie>> {
-            //Actualizar la vista
-
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     return false
