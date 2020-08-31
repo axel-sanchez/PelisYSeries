@@ -16,7 +16,9 @@ class DetailsUseCase {
      * Obtiene los detalles de la movie
      * @return devuelve una movie
      */
-    fun getMovie(repository: GenericRepository, id: Int): Movie {
-        return repository.getMovie(arrayOf(TableMovie.Columns.COLUMN_NAME_ID), arrayOf(id.toString()), null).first()
+    suspend fun getMovie(repository: GenericRepository, id: Int): Movie {
+        var movie = repository.getMovie(arrayOf(TableMovie.Columns.COLUMN_NAME_ID), arrayOf(id.toString()), null).first()
+        movie.keyVideo = api.getVideo(id).value!!.first().key
+        return movie
     }
 }

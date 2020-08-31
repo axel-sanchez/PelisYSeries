@@ -18,5 +18,6 @@ data class Movie(
     val vote_average: Double,
     val vote_count: Int,
     var origen: String? = null,
-    var imageView: ImageView? = null
+    var imageView: ImageView? = null,
+    var keyVideo: String? = null
 )

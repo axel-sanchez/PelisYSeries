@@ -19,7 +19,7 @@ class DetailsViewModel(private val detailsUseCase: DetailsUseCase) : ViewModel()
         listData.value = movie
     }
 
-    fun getDetailsMovie(repository: GenericRepository, id: Int) {
+    suspend fun getDetailsMovie(repository: GenericRepository, id: Int) {
         setListData(detailsUseCase.getMovie(repository, id))
     }
 

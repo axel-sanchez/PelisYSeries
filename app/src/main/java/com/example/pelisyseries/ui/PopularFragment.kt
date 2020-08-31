@@ -1,5 +1,6 @@
 package com.example.pelisyseries.ui
 
+import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Build
@@ -11,6 +12,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
 import androidx.cardview.widget.CardView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
@@ -42,11 +44,7 @@ class PopularFragment: BaseFragment() {
 
     private lateinit var repository: GenericRepository
 
-    private val viewModel: PopularViewModel by lazy { ViewModelProviders.of(
-        requireActivity(), PopularViewModelFactory(
-            PopularUseCase()
-        )
-    ).get(PopularViewModel::class.java) }
+    private val viewModel: PopularViewModel by lazy { ViewModelProviders.of(requireActivity(), PopularViewModelFactory(PopularUseCase())).get(PopularViewModel::class.java) }
 
     private lateinit var viewAdapter: MovieAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager

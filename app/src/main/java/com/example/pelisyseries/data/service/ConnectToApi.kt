@@ -2,12 +2,14 @@ package com.example.pelisyseries.data.service
 
 import androidx.lifecycle.MutableLiveData
 import com.example.pelisyseries.data.models.Movie
+import com.example.pelisyseries.data.models.Video
 import com.example.pelisyseries.ui.interfaces.ApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 const val BASE_URL = "https://api.themoviedb.org/3/"
 const val API_KEY = "a0de5a9fe43359e41cb94081d6bafc05" //(AUTH V3)
+
 /**
  * Esta clase es la encargada de conectarse a las api's
  * @author Axel Sanchez
@@ -61,6 +63,14 @@ class ConnectToApi {
         var response = service.search(API_KEY, query)
         println("devolvio: ${response.results}")
         mutableLiveData.value = response.results
+        return mutableLiveData
+    }
+
+    suspend fun getVideo(id: Int): MutableLiveData<List<Video>> {
+        var mutableLiveData = MutableLiveData<List<Video>>()
+        var response = service.getVideo(id.toString(), API_KEY)
+        mutableLiveData.value = response.results
+        println("devolvio: ${response.results}")
         return mutableLiveData
     }
 

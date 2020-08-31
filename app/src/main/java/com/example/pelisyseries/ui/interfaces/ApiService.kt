@@ -1,8 +1,9 @@
 package com.example.pelisyseries.ui.interfaces
 
 import com.example.pelisyseries.data.models.Result
-import retrofit2.Call
+import com.example.pelisyseries.data.models.VideoResult
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
@@ -36,6 +37,9 @@ interface ApiService {
 
     @GET("search/movie")
     suspend fun search(@Query("api_key") apiKey: String, @Query("query") query: String): Result
+
+    @GET("movie/{movie_id}/videos")
+    suspend fun getVideo(@Path("movie_id") id: String, @Query("api_key") apiKey: String): VideoResult
 
     /*
      * Example = https://api.themoviedb.org/3/movie/550?api_key=a0de5a9fe43359e41cb94081d6bafc05

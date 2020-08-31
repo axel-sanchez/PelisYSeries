@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
@@ -35,6 +36,8 @@ class MainFragment: BaseFragment() {
         super.onCreate(savedInstanceState)
         viewModel.getListFragments()
 
+        copyFragment = this
+
         setupViewModelAndObserve()
     }
 
@@ -59,5 +62,9 @@ class MainFragment: BaseFragment() {
         viewpager.adapter = adapter
         tabs.setupWithViewPager(viewpager)
         //viewpager.pageMargin = -64
+    }
+
+    companion object{
+        lateinit var copyFragment: Fragment
     }
 }
