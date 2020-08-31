@@ -7,11 +7,9 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.airbnb.lottie.LottieAnimationView
 import com.example.pelisyseries.R
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.repository.GenericRepository
@@ -72,6 +70,20 @@ class DetailsActivity : YouTubeBaseActivity() {
         image.transitionName = "main_poster"
 
         val idMovie = intent.extras!!.getInt("idMovie")
+        val posterPath = intent.extras!!.getString("poster_path")
+
+        Picasso.with(this)
+            .load("$BASE_URL_IMAGEN${posterPath}")
+            .noFade()
+            .into(image, object : Callback {
+                override fun onSuccess() {
+                    startPostponedEnterTransition()
+                }
+
+                override fun onError() {
+                    startPostponedEnterTransition()
+                }
+            })
 
         CoroutineScope(Dispatchers.Main).launch {
             viewModel.getDetailsMovie(repository, idMovie)
@@ -110,19 +122,6 @@ class DetailsActivity : YouTubeBaseActivity() {
 
                 })
             }
-
-            Picasso.with(this)
-                .load("$BASE_URL_IMAGEN${it.poster_path}")
-                .noFade()
-                .into(image, object : Callback {
-                    override fun onSuccess() {
-                        startPostponedEnterTransition()
-                    }
-
-                    override fun onError() {
-                        startPostponedEnterTransition()
-                    }
-                })
         }
         viewModel.getDetailsMovieLiveData().observeForever(daysObserver)
     }
