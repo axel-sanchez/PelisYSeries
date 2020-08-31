@@ -3,7 +3,6 @@ package com.example.pelisyseries.data.service
 import androidx.lifecycle.MutableLiveData
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.models.Video
-import com.example.pelisyseries.ui.interfaces.ApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

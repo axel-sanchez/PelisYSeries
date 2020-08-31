@@ -191,7 +191,6 @@ class TopRatedFragment : BaseFragment() {
         }
     }
 
-
     private fun itemClick(item: Movie) {
         val intent = Intent(context, DetailsActivity::class.java)
         intent.putExtra("idMovie", item.id)

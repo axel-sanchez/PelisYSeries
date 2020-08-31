@@ -1,5 +1,7 @@
 package com.example.pelisyseries.domain
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.example.pelisyseries.ui.PopularFragment
 import com.example.pelisyseries.ui.TopRatedFragment
 import com.example.pelisyseries.ui.UpcomingFragment
@@ -15,6 +17,7 @@ class MovieUseCase {
      * Recibe el mutableLiveData y obtiene su listado de movies
      * @return devuelve un listado de movies
      */
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun getMovieList(): MutableList<ItemViewPager> {
         val listado: MutableList<ItemViewPager> = LinkedList()
         listado.add(ItemViewPager("Popular", PopularFragment()))

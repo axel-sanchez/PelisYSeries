@@ -1,7 +1,8 @@
-package com.example.pelisyseries.ui.interfaces
+package com.example.pelisyseries.data.service
 
 import com.example.pelisyseries.data.models.Result
 import com.example.pelisyseries.data.models.VideoResult
+import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -40,6 +41,40 @@ interface ApiService {
 
     @GET("movie/{movie_id}/videos")
     suspend fun getVideo(@Path("movie_id") id: String, @Query("api_key") apiKey: String): VideoResult
+
+
+    //TODO: FUNCIONES CREADAS PARA HACER TEST
+
+
+    /**
+     * Api que devuelve las peliculas más populares
+     * Solo es necesario pasar el appi_key
+     * @param [apiKey] código que nos da la página de la api
+     */
+    @GET("movie/popular")
+    fun getPopularTest(@Query("api_key") apiKey: String): Call<Result>
+
+    /**
+     * Api que devuelve las peliculas mejor calificadas
+     * Solo es necesario pasar el appi_key
+     * @param [apiKey] código que nos da la página de la api
+     */
+    @GET("movie/top_rated")
+    fun getTopRatedTest(@Query("api_key") apiKey: String): Call<Result>
+
+    /**
+     * Api que devuelve las peliculas próximas a estrenar
+     * Solo es necesario pasar el appi_key
+     * @param [apiKey] código que nos da la página de la api
+     */
+    @GET("movie/upcoming")
+    fun getUpcomingTest(@Query("api_key") apiKey: String): Call<Result>
+
+    @GET("search/movie")
+    fun searchTest(@Query("api_key") apiKey: String, @Query("query") query: String): Call<Result>
+
+    @GET("movie/{movie_id}/videos")
+    fun getVideoTest(@Path("movie_id") id: String, @Query("api_key") apiKey: String): Call<VideoResult>
 
     /*
      * Example = https://api.themoviedb.org/3/movie/550?api_key=a0de5a9fe43359e41cb94081d6bafc05
