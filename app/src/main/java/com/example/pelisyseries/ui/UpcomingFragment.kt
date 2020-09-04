@@ -200,7 +200,6 @@ class UpcomingFragment: BaseFragment() {
     private fun itemClick(item: Movie){
         val intent = Intent(context, DetailsActivity::class.java)
         intent.putExtra("idMovie", item.id)
-        intent.putExtra("poster_path", item.poster_path)
         val options = ActivityOptions.makeSceneTransitionAnimation(activity, item.imageView, "main_poster")
         startActivity(intent, options.toBundle())
     }

@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.pelisyseries.R
 import com.example.pelisyseries.data.models.Movie
+import com.example.pelisyseries.data.models.Video
 import com.example.pelisyseries.data.repository.GenericRepository
 import com.example.pelisyseries.databinding.FragmentDetailsMovieBinding
 import com.example.pelisyseries.domain.DetailsUseCase
@@ -34,8 +35,6 @@ const val API_KEY_YOUTUBE = "AIzaSyCQ6v66wKoSuumIAHFzEUfan3MIS9gpRRc"
  */
 class DetailsActivity : YouTubeBaseActivity() {
 
-    private val repository: GenericRepository by inject()
-
     private lateinit var binding: FragmentDetailsMovieBinding
 
     private lateinit var viewModel: DetailsViewModel
@@ -51,23 +50,13 @@ class DetailsActivity : YouTubeBaseActivity() {
         binding.image.transitionName = "main_poster"
 
         val idMovie = intent.extras!!.getInt("idMovie")
-        val posterPath = intent.extras!!.getString("poster_path")
-
-        Picasso.with(this)
-            .load("$BASE_URL_IMAGEN${posterPath}")
-            .noFade()
-            .into(binding.image, object : Callback {
-                override fun onSuccess() {
-                    startPostponedEnterTransition()
-                }
-
-                override fun onError() {
-                    startPostponedEnterTransition()
-                }
-            })
 
         CoroutineScope(Dispatchers.Main).launch {
-            viewModel.getDetailsMovie(repository, idMovie)
+            viewModel.getDetailsMovie(idMovie)
+        }
+
+        CoroutineScope(Dispatchers.Main).launch {
+            viewModel.getVideo(idMovie)
         }
 
         setupViewModelAndObserve()
@@ -87,8 +76,22 @@ class DetailsActivity : YouTubeBaseActivity() {
             if (it.adult) binding.edad.visibility = View.VISIBLE
             else binding.edad.visibility = View.GONE
 
-            var key = it.keyVideo
+            Picasso.with(this)
+                .load("$BASE_URL_IMAGEN${it.poster_path}")
+                .noFade()
+                .into(binding.image, object : Callback {
+                    override fun onSuccess() {
+                        startPostponedEnterTransition()
+                    }
 
+                    override fun onError() {
+                        startPostponedEnterTransition()
+                    }
+                })
+        }
+        val observerVideo = Observer<Video>{
+            var key = it.key
+            binding.play.visibility = View.VISIBLE
             binding.play.setOnClickListener {
                 findViewById<YouTubePlayerView>(R.id.youtube).initialize(API_KEY_YOUTUBE, object : YouTubePlayer.OnInitializedListener {
                     override fun onInitializationSuccess(p0: YouTubePlayer.Provider?, youtubePlayer: YouTubePlayer?, p2: Boolean) {
@@ -105,6 +108,7 @@ class DetailsActivity : YouTubeBaseActivity() {
             }
         }
         viewModel.getDetailsMovieLiveData().observeForever(daysObserver)
+        viewModel.getLiveDataVideo().observeForever(observerVideo)
     }
 
     override fun onBackPressed() {
