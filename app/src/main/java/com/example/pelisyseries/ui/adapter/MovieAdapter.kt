@@ -14,34 +14,38 @@ import com.example.pelisyseries.data.models.Movie
 import com.squareup.picasso.Picasso
 
 const val BASE_URL_IMAGEN = "https://image.tmdb.org/t/p/w500"
+
 /**
  * Clase que adapta el recyclerview de [MainFragment]
  * @author Axel Sanchez
  */
 class MovieAdapter(
-    var mItems: List<Movie>,
-    var itemClick: (Movie) -> Unit
+    var mItems: List<Movie?>,
+    private var itemClick: (Movie) -> Unit
 ) : RecyclerView.Adapter<MovieAdapter.ViewHolder>(), Filterable {
 
     private var mFilteredList = mItems
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-        fun bind(item: Movie, itemClick: (Movie) -> Unit) {
+        fun bind(item: Movie?, itemClick: (Movie) -> Unit) {
             var image = itemView.findViewById<ImageView>(R.id.image)
             var title = itemView.findViewById<TextView>(R.id.title)
 
-            ViewCompat.setTransitionName(image, item.title)
+            ViewCompat.setTransitionName(image, item?.let{ it.title }?: kotlin.run { "" })
 
             Picasso.with(itemView.context)
-                .load("$BASE_URL_IMAGEN${item.poster_path}")
+                .load("$BASE_URL_IMAGEN${item?.let{ it.poster_path}?: kotlin.run { "" }}")
                 .into(image)
 
-            title.text = item.title
+            title.text = item?.let{ it.title }?: kotlin.run { "" }
 
             image.setOnClickListener {
-                item.imageView = image
-                itemClick(item)
+                item?.let {
+                    it.imageView = image
+                    itemClick(item)
+                }
+
             }
         }
     }
@@ -81,9 +85,10 @@ class MovieAdapter(
 
                     for (item in mItems) {
 
-                        if (item.title.toLowerCase().contains(charString.toLowerCase())) {
-
-                            filteredList.add(item)
+                        item?.let {
+                            if (item.title.toLowerCase().contains(charString.toLowerCase())) {
+                                filteredList.add(item)
+                            }
                         }
                     }
                     mFilteredList = filteredList
@@ -105,7 +110,7 @@ class MovieAdapter(
         mItems = newItems
     }
 
-    fun getItems(): List<Movie> {
+    fun getItems(): List<Movie?> {
         return mFilteredList
     }
 }

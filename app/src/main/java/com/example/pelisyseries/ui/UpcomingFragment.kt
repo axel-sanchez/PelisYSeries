@@ -96,7 +96,7 @@ class UpcomingFragment: BaseFragment() {
      * Y también va a estar a la escucha de cuando buscamos el video de la pelicula
      */
     private fun setupViewModelAndObserve() {
-        val daysObserver = Observer<List<Movie>> {
+        val daysObserver = Observer<List<Movie?>> {
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     if (viewAdapter.getItems().isNullOrEmpty()) {
@@ -138,14 +138,16 @@ class UpcomingFragment: BaseFragment() {
             recyclerview.showView(true)
 
             for(movie in it){
-                movie.origen = UPCOMING
-                repository.insert(movie)
+                movie?.let{ it ->
+                    it.origen = UPCOMING
+                    repository.insert(movie)
+                }
             }
 
             setAdapter(it)
         }
 
-        val searchObserver = Observer<List<Movie>> {
+        val searchObserver = Observer<List<Movie?>> {
             emptyState.showView(false)
             emptyStateFilter.showView(false)
             progress.cancelAnimation()
@@ -160,8 +162,10 @@ class UpcomingFragment: BaseFragment() {
             }
 
             for(movie in it){
-                movie.origen = GLOBAL
-                repository.insert(movie)
+                movie?.let { it ->
+                    it.origen = GLOBAL
+                    repository.insert(movie)
+                }
             }
 
             setAdapter(it)
@@ -175,7 +179,7 @@ class UpcomingFragment: BaseFragment() {
      * Adaptamos el recyclerview de peliculas
      * @param [movies] listado de peliculas
      */
-    private fun setAdapter(movies: List<Movie>) {
+    private fun setAdapter(movies: List<Movie?>) {
 
         viewAdapter = MovieAdapter(movies) { itemClick(it) }
 

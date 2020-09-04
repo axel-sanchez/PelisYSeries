@@ -20,13 +20,13 @@ class PopularUseCase: KoinComponent {
      * @param [repository] objeto que sirve para hacer llamadas a la database
      * @return devuelve un listado de movies populares
      */
-    suspend fun getMovieList(repository: GenericRepository): List<Movie> {
+    suspend fun getMovieList(repository: GenericRepository): List<Movie?> {
 
         var movies = repository.getMovie(arrayOf(TableMovie.Columns.COLUMN_NAME_ORIGEN_LIST), arrayOf(POPULAR), null)
 
         return if(movies.isEmpty()){
             var response = api.getPopular()
-            response.value!!
+            response.value?.let { it }?: kotlin.run { listOf() }
         } else{
             movies
         }
@@ -37,8 +37,8 @@ class PopularUseCase: KoinComponent {
      * @param [query] nombre de la pelicula
      * @return devuelve un listado de movies encontradas
      */
-    suspend fun getMovieListFromSearch(query: String): List<Movie> {
+    suspend fun getMovieListFromSearch(query: String): List<Movie?> {
         var response = api.search(query)
-        return response.value!!
+        return response.value?.let { it }?: kotlin.run { listOf() }
     }
 }

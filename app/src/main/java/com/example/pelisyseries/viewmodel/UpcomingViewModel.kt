@@ -13,14 +13,14 @@ import com.example.pelisyseries.domain.UpcomingUseCase
  */
 class UpcomingViewModel(private val upcomingUseCase: UpcomingUseCase) : ViewModel() {
 
-    private val listData = MutableLiveData<List<Movie>>()
-    private val listDataFromSearch = MutableLiveData<List<Movie>>()
+    private val listData = MutableLiveData<List<Movie?>>()
+    private val listDataFromSearch = MutableLiveData<List<Movie?>>()
 
-    private fun setListData(listaMovies: List<Movie>) {
+    private fun setListData(listaMovies: List<Movie?>) {
         listData.value = listaMovies
     }
 
-    private fun setListDataFromSearch(listaMovies: List<Movie>) {
+    private fun setListDataFromSearch(listaMovies: List<Movie?>) {
         listDataFromSearch.value = listaMovies
     }
 
@@ -32,11 +32,11 @@ class UpcomingViewModel(private val upcomingUseCase: UpcomingUseCase) : ViewMode
         setListDataFromSearch(upcomingUseCase.getMovieListFromSearch(query))
     }
 
-    fun getListMoviesLiveData(): LiveData<List<Movie>> {
+    fun getListMoviesLiveData(): LiveData<List<Movie?>> {
         return listData
     }
 
-    fun getListMoviesLiveDataFromSearch(): LiveData<List<Movie>> {
+    fun getListMoviesLiveDataFromSearch(): LiveData<List<Movie?>> {
         return listDataFromSearch
     }
 }

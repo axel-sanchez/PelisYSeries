@@ -24,7 +24,11 @@ class DetailsUseCase: KoinComponent {
         return repository.getMovie(arrayOf(TableMovie.Columns.COLUMN_NAME_ID), arrayOf(id.toString()), null).first()
     }
 
-    suspend fun getVideo(id: Int): Video {
-        return api.getVideo(id).value!!.first()
+    suspend fun getVideo(id: Int): Video? {
+        var response = api.getVideo(id)
+        return response.value?.let {
+            if(it.isNotEmpty()) it.first()
+            else null
+        }?: kotlin.run { null }
     }
 }

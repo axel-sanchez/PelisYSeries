@@ -21,13 +21,13 @@ class UpcomingUseCase: KoinComponent {
      * @param [repository] objeto que manipula la database
      * @return devuelve un listado de movies próximas a estrenar
      */
-    suspend fun getMovieList(repository: GenericRepository): List<Movie> {
+    suspend fun getMovieList(repository: GenericRepository): List<Movie?> {
 
         var movies = repository.getMovie(arrayOf(TableMovie.Columns.COLUMN_NAME_ORIGEN_LIST), arrayOf(UPCOMING), null)
 
         return if (movies.isEmpty()) {
             var response = api.getUpcoming()
-            response.value!!
+            response.value?.let { it }?: kotlin.run { listOf() }
         } else {
             movies
         }
@@ -37,8 +37,8 @@ class UpcomingUseCase: KoinComponent {
      * @param [query] nombre de la pelicula
      * @return devuelve un listado de movies que corresponden con la búsqueda
      */
-    suspend fun getMovieListFromSearch(query: String): List<Movie> {
+    suspend fun getMovieListFromSearch(query: String): List<Movie?> {
         var response = api.search(query)
-        return response.value!!
+        return response.value?.let { it }?: kotlin.run { listOf() }
     }
 }

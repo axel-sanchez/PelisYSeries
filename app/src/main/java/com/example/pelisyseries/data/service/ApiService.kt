@@ -3,6 +3,7 @@ package com.example.pelisyseries.data.service
 import com.example.pelisyseries.data.models.Result
 import com.example.pelisyseries.data.models.VideoResult
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -18,7 +19,7 @@ interface ApiService {
      * @return devuelve un [Result]
      */
     @GET("movie/popular")
-    suspend fun getPopular(@Query("api_key") apiKey: String): Result
+    suspend fun getPopular(@Query("api_key") apiKey: String): Response<Result>
 
     /**
      * Api que devuelve las peliculas mejor calificadas
@@ -26,7 +27,7 @@ interface ApiService {
      * @return devuelve un [Result]
      */
     @GET("movie/top_rated")
-    suspend fun getTopRated(@Query("api_key") apiKey: String): Result
+    suspend fun getTopRated(@Query("api_key") apiKey: String): Response<Result>
 
     /**
      * Api que devuelve las peliculas próximas a estrenar
@@ -34,7 +35,7 @@ interface ApiService {
      * @return devuelve un [Result]
      */
     @GET("movie/upcoming")
-    suspend fun getUpcoming(@Query("api_key") apiKey: String): Result
+    suspend fun getUpcoming(@Query("api_key") apiKey: String): Response<Result>
 
     /**
      * Api que devuelve las peliculas que coinciden con la búsqueda
@@ -43,7 +44,7 @@ interface ApiService {
      * @return devuelve un [Result]
      */
     @GET("search/movie")
-    suspend fun search(@Query("api_key") apiKey: String, @Query("query") query: String): Result
+    suspend fun search(@Query("api_key") apiKey: String, @Query("query") query: String): Response<Result>
 
     /**
      * Api que devuelve el video de una pelicula
@@ -52,7 +53,7 @@ interface ApiService {
      * @return devuelve un [VideoResult]
      */
     @GET("movie/{movie_id}/videos")
-    suspend fun getVideo(@Path("movie_id") id: String, @Query("api_key") apiKey: String): VideoResult
+    suspend fun getVideo(@Path("movie_id") id: String, @Query("api_key") apiKey: String): Response<VideoResult>
 
 
     //TODO: FUNCIONES CREADAS PARA HACER TEST

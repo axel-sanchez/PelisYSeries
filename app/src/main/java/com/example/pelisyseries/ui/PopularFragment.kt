@@ -77,7 +77,7 @@ class PopularFragment: BaseFragment() {
      * Y también va a estar a la escucha de cuando buscamos el video de la pelicula
      */
     private fun setupViewModelAndObserve() {
-        val daysObserver = Observer<List<Movie>> {
+        val daysObserver = Observer<List<Movie?>> {
             binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     if (viewAdapter.getItems().isNullOrEmpty()) {
@@ -119,14 +119,18 @@ class PopularFragment: BaseFragment() {
             binding.recyclerview.showView(true)
 
             for(movie in it){
-                movie.origen = POPULAR
-                repository.insert(movie)
+                movie?.let { it ->
+                    it.origen = POPULAR
+                    repository.insert(movie)
+                }
             }
 
-            setAdapter(it)
+            it?.let{it ->
+                setAdapter(it)
+            }
         }
 
-        val searchObserver = Observer<List<Movie>> {
+        val searchObserver = Observer<List<Movie?>> {
             binding.emptyState.showView(false)
             binding.emptyStateFilter.showView(false)
             binding.progress.cancelAnimation()
@@ -139,8 +143,10 @@ class PopularFragment: BaseFragment() {
             }
 
             for(movie in it){
-                movie.origen = GLOBAL
-                repository.insert(movie)
+                movie?.let{ it ->
+                    it.origen = GLOBAL
+                    repository.insert(movie)
+                }
             }
 
             setAdapter(it)
@@ -154,7 +160,7 @@ class PopularFragment: BaseFragment() {
      * Adaptamos el recyclerview de peliculas
      * @param [movies] listado de peliculas
      */
-    private fun setAdapter(movies: List<Movie>) {
+    private fun setAdapter(movies: List<Movie?>) {
 
         viewAdapter = MovieAdapter(movies) { itemClick(it) }
 

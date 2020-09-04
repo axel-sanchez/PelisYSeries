@@ -86,7 +86,7 @@ class TopRatedFragment : BaseFragment() {
      * Y también va a estar a la escucha de cuando buscamos el video de la pelicula
      */
     private fun setupViewModelAndObserve() {
-        val daysObserver = Observer<List<Movie>> {
+        val daysObserver = Observer<List<Movie?>> {
             binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     if (viewAdapter.getItems().isNullOrEmpty()) {
@@ -128,14 +128,16 @@ class TopRatedFragment : BaseFragment() {
             recyclerview.showView(true)
 
             for (movie in it) {
-                movie.origen = TOP_RATED
-                repository.insert(movie)
+                movie?.let { it ->
+                    it.origen = TOP_RATED
+                    repository.insert(movie)
+                }
             }
 
             setAdapter(it)
         }
 
-        val searchObserver = Observer<List<Movie>> {
+        val searchObserver = Observer<List<Movie?>> {
             binding.emptyState.showView(false)
             binding.emptyStateFilter.showView(false)
             progress.cancelAnimation()
@@ -154,8 +156,10 @@ class TopRatedFragment : BaseFragment() {
             }
 
             for (movie in it) {
-                movie.origen = GLOBAL
-                repository.insert(movie)
+                movie?.let { it ->
+                    it.origen = GLOBAL
+                    repository.insert(movie)
+                }
             }
 
             setAdapter(it)
@@ -169,7 +173,7 @@ class TopRatedFragment : BaseFragment() {
      * Adaptamos el recyclerview de peliculas
      * @param [movies] listado de peliculas
      */
-    private fun setAdapter(movies: List<Movie>) {
+    private fun setAdapter(movies: List<Movie?>) {
         viewAdapter = MovieAdapter(movies) { itemClick(it) }
 
         viewManager = GridLayoutManager(this.requireContext(), 2)
