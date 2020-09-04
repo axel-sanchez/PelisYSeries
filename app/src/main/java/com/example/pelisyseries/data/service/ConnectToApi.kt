@@ -3,6 +3,8 @@ package com.example.pelisyseries.data.service
 import androidx.lifecycle.MutableLiveData
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.models.Video
+import org.koin.standalone.KoinComponent
+import org.koin.standalone.inject
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -13,13 +15,8 @@ const val API_KEY = "a0de5a9fe43359e41cb94081d6bafc05" //(AUTH V3)
  * Esta clase es la encargada de conectarse a las api's
  * @author Axel Sanchez
  */
-class ConnectToApi {
-    private val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-
-    private var service: ApiService = retrofit.create(ApiService::class.java)
+class ConnectToApi: KoinComponent {
+    private val service: ApiService by inject()
 
     /**
      * Esta función es la encargada de retornar las movies mas populares
@@ -78,19 +75,5 @@ class ConnectToApi {
         mutableLiveData.value = response.results
         println("devolvio: ${response.results}")
         return mutableLiveData
-    }
-
-    companion object {
-        /**
-         * Utilizo Singleton para crear solo una instancia de esta clase
-         */
-        private var instance: ConnectToApi? = null
-
-        fun getInstance(): ConnectToApi {
-            if (instance == null) {
-                instance = ConnectToApi()
-            }
-            return instance!!
-        }
     }
 }

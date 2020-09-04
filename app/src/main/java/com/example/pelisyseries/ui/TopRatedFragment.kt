@@ -34,6 +34,7 @@ import kotlinx.android.synthetic.main.fragment_movies.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 
 /**
  * Segundo fragment en mostrarse en el activity principal
@@ -42,7 +43,7 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class TopRatedFragment : BaseFragment() {
 
-    private lateinit var repository: GenericRepository
+    private val repository: GenericRepository by inject()
 
     private val viewModel: TopRatedViewModel by lazy {
         ViewModelProviders.of(
@@ -74,8 +75,6 @@ class TopRatedFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        repository = GenericRepository.getInstance(context!!)
 
         progress = view.findViewById(R.id.progress)
         recyclerview = view.findViewById(R.id.recyclerview)

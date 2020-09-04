@@ -5,13 +5,15 @@ import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.repository.GenericRepository
 import com.example.pelisyseries.data.repository.POPULAR
 import com.example.pelisyseries.data.service.ConnectToApi
+import org.koin.standalone.KoinComponent
+import org.koin.standalone.inject
 
 /**
  * Caso de uso para las movies populares
  * @author Axel Sanchez
  */
-class PopularUseCase {
-    private val api = ConnectToApi.getInstance()
+class PopularUseCase: KoinComponent {
+    private val api: ConnectToApi by inject()
 
     /**
      * Recibe el mutableLiveData y obtiene su listado de movies populares

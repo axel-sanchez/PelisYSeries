@@ -35,6 +35,7 @@ import kotlinx.android.synthetic.main.fragment_movies.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 
 /**
  * Tercer fragment en mostrarse en el activity principal
@@ -43,7 +44,7 @@ import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class UpcomingFragment: BaseFragment() {
 
-    private lateinit var repository: GenericRepository
+    private val repository: GenericRepository by inject()
 
     private val viewModel: UpcomingViewModel by lazy { ViewModelProviders.of(requireActivity(), UpcomingViewModelFactory(UpcomingUseCase())).get(UpcomingViewModel::class.java) }
 
@@ -66,7 +67,6 @@ class UpcomingFragment: BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        repository = GenericRepository.getInstance(context!!)
 
         progress = view.findViewById(R.id.progress)
         recyclerview = view.findViewById(R.id.recyclerview)

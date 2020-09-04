@@ -26,6 +26,7 @@ import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 
 const val API_KEY_YOUTUBE = "AIzaSyCQ6v66wKoSuumIAHFzEUfan3MIS9gpRRc"
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -35,7 +36,7 @@ const val API_KEY_YOUTUBE = "AIzaSyCQ6v66wKoSuumIAHFzEUfan3MIS9gpRRc"
  */
 class DetailsActivity : YouTubeBaseActivity() {
 
-    private lateinit var repository: GenericRepository
+    private val repository: GenericRepository by inject()
 
     private lateinit var viewModel: DetailsViewModel
 
@@ -52,8 +53,6 @@ class DetailsActivity : YouTubeBaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.fragment_details_movie)
-
-        repository = GenericRepository.getInstance(this)
 
         image = findViewById(R.id.image)
         title = findViewById(R.id.title)

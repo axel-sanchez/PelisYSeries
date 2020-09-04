@@ -6,13 +6,15 @@ import com.example.pelisyseries.data.repository.GenericRepository
 import com.example.pelisyseries.data.repository.POPULAR
 import com.example.pelisyseries.data.repository.TOP_RATED
 import com.example.pelisyseries.data.service.ConnectToApi
+import org.koin.standalone.KoinComponent
+import org.koin.standalone.inject
 
 /**
  * Caso de uso para las movies mejor calificadas
  * @author Axel Sanchez
  */
-class TopRatedUseCase {
-    private val api = ConnectToApi.getInstance()
+class TopRatedUseCase: KoinComponent {
+    private val api: ConnectToApi by inject()
 
     /**
      * Recibe el mutableLiveData y obtiene su listado de movies mejores calificadas

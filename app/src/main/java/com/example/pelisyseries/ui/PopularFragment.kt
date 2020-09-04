@@ -33,6 +33,7 @@ import kotlinx.android.synthetic.main.fragment_movies.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -42,7 +43,7 @@ import kotlinx.coroutines.launch
  */
 class PopularFragment: BaseFragment() {
 
-    private lateinit var repository: GenericRepository
+    private val repository: GenericRepository by inject()
 
     private val viewModel: PopularViewModel by lazy { ViewModelProviders.of(requireActivity(), PopularViewModelFactory(PopularUseCase())).get(PopularViewModel::class.java) }
 
@@ -69,8 +70,6 @@ class PopularFragment: BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        repository = GenericRepository.getInstance(context!!)
 
         progress = view.findViewById(R.id.progress)
         recyclerview = view.findViewById(R.id.recyclerview)

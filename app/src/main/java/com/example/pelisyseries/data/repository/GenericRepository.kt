@@ -7,6 +7,8 @@ import android.util.Log
 import com.example.pelisyseries.data.Database
 import com.example.pelisyseries.data.TableMovie
 import com.example.pelisyseries.data.models.Movie
+import org.koin.standalone.KoinComponent
+import org.koin.standalone.inject
 
 const val POPULAR = "popular"
 const val TOP_RATED = "top_rated"
@@ -17,26 +19,11 @@ const val GLOBAL = "global"
  * Clase utilizada para obtener y modificar datos de la database
  * @author Axel Sanchez
  */
-class GenericRepository {
+class GenericRepository: KoinComponent {
 
-    private lateinit var dbHelper: Database
-    lateinit var db: SQLiteDatabase
-
-    companion object {
-        private var instance: GenericRepository? = null
-
-        /**
-         * Utilizo Singleton para crear solo una instancia de esta clase
-         */
-        fun getInstance(context: Context): GenericRepository {
-            if (instance == null) {
-                instance = GenericRepository()
-                instance!!.dbHelper = Database(context)
-                instance!!.db = instance!!.dbHelper.writableDatabase
-            }
-            return instance!!
-        }
-    }
+    private val dbHelper: Database by inject()
+    private val db = dbHelper.writableDatabase
+    private val dbR = dbHelper.readableDatabase
 
     /**
      * Insertar una [Movie] en la database
@@ -80,8 +67,6 @@ class GenericRepository {
      * @return devuelve el id del registro actualizado, si falla devuelve un -1
      */
     fun update(item: Movie): Int {
-        val db = dbHelper.writableDatabase
-
         var idsGenre = ""
         for (id in item.genre_ids) {
             if (idsGenre.isEmpty()) idsGenre += id
@@ -121,8 +106,6 @@ class GenericRepository {
      * @return devuelve un mutableList de peliculas
      */
     fun getMovie(whereColumns: Array<String>?, whereArgs: Array<String>?, orderByColumn: String?): MutableList<Movie> {
-        val db = dbHelper.readableDatabase
-
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         val projection = arrayOf(
@@ -149,7 +132,7 @@ class GenericRepository {
         // How you want the results sorted in the resulting Cursor
         val sortOrder: String? = if (orderByColumn?.count() != 0) "$orderByColumn DESC" else null
 
-        var cursor = db.query(
+        var cursor = dbR.query(
             TableMovie.Columns.TABLE_NAME,   // The table to query
             projection,             // The array of columns to return (pass null to get all)
             selection,              // The columns for the WHERE clause
@@ -193,7 +176,6 @@ class GenericRepository {
      * @return devuelve el id del registro eliminado, si falla devuelve un -1
      */
     fun deleteMovie(id: Long): Int {
-        val db = dbHelper.writableDatabase
         // Define 'where' part of query.
         val selection = "${TableMovie.Columns.COLUMN_NAME_ID} = ?"
         // Specify arguments in placeholder order.
