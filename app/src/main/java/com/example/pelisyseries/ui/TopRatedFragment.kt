@@ -25,6 +25,7 @@ import com.example.pelisyseries.data.repository.GLOBAL
 import com.example.pelisyseries.data.repository.GenericRepository
 import com.example.pelisyseries.data.repository.POPULAR
 import com.example.pelisyseries.data.repository.TOP_RATED
+import com.example.pelisyseries.databinding.FragmentMoviesBinding
 import com.example.pelisyseries.domain.TopRatedUseCase
 import com.example.pelisyseries.ui.adapter.MovieAdapter
 import com.example.pelisyseries.ui.customs.BaseFragment
@@ -55,33 +56,23 @@ class TopRatedFragment : BaseFragment() {
     private lateinit var viewAdapter: MovieAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
 
-    private lateinit var progress: LottieAnimationView
-    private lateinit var recyclerview: RecyclerView
-    private lateinit var searchView: SearchView
-    private lateinit var emptyState: CardView
-    private lateinit var emptyStateFilter: LinearLayout
-    private lateinit var searchOnline: Button
-
     override fun onBackPressFragment() = false
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_movies, container, false)
+    private var fragmentMainBinding: FragmentMoviesBinding? = null
+    private val binding get() = fragmentMainBinding!!
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        fragmentMainBinding = FragmentMoviesBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        fragmentMainBinding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        progress = view.findViewById(R.id.progress)
-        recyclerview = view.findViewById(R.id.recyclerview)
-        searchView = view.findViewById(R.id.search)
-        emptyState = view.findViewById(R.id.empty_state)
-        emptyStateFilter = view.findViewById(R.id.empty_state_filter)
-        searchOnline = view.findViewById(R.id.search_online)
 
         CoroutineScope(Main).launch {
             viewModel.getListMovies(repository)
@@ -96,39 +87,39 @@ class TopRatedFragment : BaseFragment() {
      */
     private fun setupViewModelAndObserve() {
         val daysObserver = Observer<List<Movie>> {
-            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     if (viewAdapter.getItems().isNullOrEmpty()) {
-                        emptyState.showView(true)
-                        emptyStateFilter.showView(true)
+                        binding.emptyState.showView(true)
+                        binding.emptyStateFilter.showView(true)
                     } else {
-                        emptyState.showView(false)
-                        emptyStateFilter.showView(false)
+                        binding.emptyState.showView(false)
+                        binding.emptyStateFilter.showView(false)
                     }
                     return false
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    emptyState.showView(false)
-                    emptyStateFilter.showView(false)
+                    binding.emptyState.showView(false)
+                    binding.emptyStateFilter.showView(false)
                     viewAdapter.filter.filter(newText)
                     return false
                 }
             })
 
-            searchOnline.setOnClickListener {
+            binding.searchOnline.setOnClickListener {
                 CoroutineScope(Main).launch {
-                    viewModel.getListMoviesFromSearch(searchView.query.toString())
+                    viewModel.getListMoviesFromSearch(binding.search.query.toString())
                 }
-                emptyState.showView(false)
-                emptyStateFilter.showView(false)
+                binding.emptyState.showView(false)
+                binding.emptyStateFilter.showView(false)
                 progress.playAnimation()
                 progress.showView(true)
             }
 
-            searchView.setOnCloseListener {
-                emptyState.showView(false)
-                emptyStateFilter.showView(false)
+            binding.search.setOnCloseListener {
+                binding.emptyState.showView(false)
+                binding.emptyStateFilter.showView(false)
                 false
             }
 
@@ -145,13 +136,13 @@ class TopRatedFragment : BaseFragment() {
         }
 
         val searchObserver = Observer<List<Movie>> {
-            emptyState.showView(false)
-            emptyStateFilter.showView(false)
+            binding.emptyState.showView(false)
+            binding.emptyStateFilter.showView(false)
             progress.cancelAnimation()
             progress.showView(false)
             recyclerview.showView(true)
 
-            searchView.setOnCloseListener {
+            binding.search.setOnCloseListener {
                 setAdapter(
                     repository.getMovie(
                         arrayOf(TableMovie.Columns.COLUMN_NAME_ORIGEN_LIST), arrayOf(

@@ -4,15 +4,13 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.pelisyseries.R
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.repository.GenericRepository
+import com.example.pelisyseries.databinding.FragmentDetailsMovieBinding
 import com.example.pelisyseries.domain.DetailsUseCase
 import com.example.pelisyseries.ui.adapter.BASE_URL_IMAGEN
 import com.example.pelisyseries.viewmodel.DetailsViewModel
@@ -38,35 +36,19 @@ class DetailsActivity : YouTubeBaseActivity() {
 
     private val repository: GenericRepository by inject()
 
-    private lateinit var viewModel: DetailsViewModel
+    private lateinit var binding: FragmentDetailsMovieBinding
 
-    private lateinit var image: ImageView
-    private lateinit var title: TextView
-    private lateinit var categoria: TextView
-    private lateinit var calificacion: TextView
-    private lateinit var edad: TextView
-    private lateinit var overview: TextView
-    private lateinit var date: TextView
-    private lateinit var play: Button
-    private lateinit var youtube: YouTubePlayerView
+    private lateinit var viewModel: DetailsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.fragment_details_movie)
-
-        image = findViewById(R.id.image)
-        title = findViewById(R.id.title)
-        categoria = findViewById(R.id.categoria)
-        calificacion = findViewById(R.id.calificacion)
-        edad = findViewById(R.id.edad)
-        overview = findViewById(R.id.overview)
-        date = findViewById(R.id.date)
-        play = findViewById(R.id.play)
-        youtube = findViewById(R.id.youtube)
+        binding = FragmentDetailsMovieBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         viewModel = ViewModelProviders.of(MainFragment.copyFragment, DetailsViewModelFactory(DetailsUseCase())).get(DetailsViewModel::class.java)
 
-        image.transitionName = "main_poster"
+        binding.image.transitionName = "main_poster"
 
         val idMovie = intent.extras!!.getInt("idMovie")
         val posterPath = intent.extras!!.getString("poster_path")
@@ -74,7 +56,7 @@ class DetailsActivity : YouTubeBaseActivity() {
         Picasso.with(this)
             .load("$BASE_URL_IMAGEN${posterPath}")
             .noFade()
-            .into(image, object : Callback {
+            .into(binding.image, object : Callback {
                 override fun onSuccess() {
                     startPostponedEnterTransition()
                 }
@@ -96,23 +78,23 @@ class DetailsActivity : YouTubeBaseActivity() {
      */
     private fun setupViewModelAndObserve() {
         val daysObserver = Observer<Movie> {
-            title.text = it.title
+            binding.title.text = it.title
 
-            calificacion.text = it.vote_average.toString()
-            categoria.text = it.origen
-            overview.text = it.overview
-            date.text = it.release_date.substring(0, 4)
-            if (it.adult) edad.visibility = View.VISIBLE
-            else edad.visibility = View.GONE
+            binding.calificacion.text = it.vote_average.toString()
+            binding.categoria.text = it.origen
+            binding.overview.text = it.overview
+            binding.date.text = it.release_date.substring(0, 4)
+            if (it.adult) binding.edad.visibility = View.VISIBLE
+            else binding.edad.visibility = View.GONE
 
             var key = it.keyVideo
 
-            play.setOnClickListener {
-                youtube.initialize(API_KEY_YOUTUBE, object : YouTubePlayer.OnInitializedListener {
+            binding.play.setOnClickListener {
+                findViewById<YouTubePlayerView>(R.id.youtube).initialize(API_KEY_YOUTUBE, object : YouTubePlayer.OnInitializedListener {
                     override fun onInitializationSuccess(p0: YouTubePlayer.Provider?, youtubePlayer: YouTubePlayer?, p2: Boolean) {
                         youtubePlayer!!.loadVideo(key)
-                        youtube.visibility = View.VISIBLE
-                        play.visibility = View.GONE
+                        findViewById<YouTubePlayerView>(R.id.youtube).visibility = View.VISIBLE
+                        binding.play.visibility = View.GONE
                     }
 
                     override fun onInitializationFailure(p0: YouTubePlayer.Provider?, p1: YouTubeInitializationResult?) {
