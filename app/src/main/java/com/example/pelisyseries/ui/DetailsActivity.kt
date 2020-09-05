@@ -79,9 +79,11 @@ class DetailsActivity : YouTubeBaseActivity() {
                     binding.calificacion.text = it.vote_average.toString()
                     binding.categoria.text = it.origen
                     binding.overview.text = it.overview
-                    binding.date.text = it.release_date.substring(0, 4)
-                    if (it.adult) binding.edad.visibility = View.VISIBLE
-                    else binding.edad.visibility = View.GONE
+                    it.release_date?.let { releaseDate -> binding.date.text = releaseDate.substring(0, 4) }
+                    it.adult?.let {adult ->
+                        if (adult) binding.edad.visibility = View.VISIBLE
+                        else binding.edad.visibility = View.GONE
+                    }
 
                     Picasso.with(this)
                         .load("$BASE_URL_IMAGEN${it.poster_path}")
@@ -98,35 +100,37 @@ class DetailsActivity : YouTubeBaseActivity() {
                 }
             }
             val observerVideo = Observer<Video?> {
-                var key: String
+                var key: String?
                 it?.let {
                     key = it.key
-                    binding.play.visibility = View.VISIBLE
-                    binding.play.setOnClickListener {
-                        findViewById<YouTubePlayerView>(R.id.youtube).initialize(
-                            API_KEY_YOUTUBE,
-                            object : YouTubePlayer.OnInitializedListener {
-                                override fun onInitializationSuccess(
-                                    p0: YouTubePlayer.Provider?,
-                                    youtubePlayer: YouTubePlayer?,
-                                    p2: Boolean
-                                ) {
-                                    youtubePlayer?.let { it -> it.loadVideo(key) }
-                                    findViewById<YouTubePlayerView>(R.id.youtube).visibility =
-                                        View.VISIBLE
-                                    binding.play.visibility = View.GONE
-                                }
+                    key?.let{
+                        binding.play.visibility = View.VISIBLE
+                        binding.play.setOnClickListener {
+                            findViewById<YouTubePlayerView>(R.id.youtube).initialize(
+                                API_KEY_YOUTUBE,
+                                object : YouTubePlayer.OnInitializedListener {
+                                    override fun onInitializationSuccess(
+                                        p0: YouTubePlayer.Provider?,
+                                        youtubePlayer: YouTubePlayer?,
+                                        p2: Boolean
+                                    ) {
+                                        youtubePlayer?.let { it -> it.loadVideo(key) }
+                                        findViewById<YouTubePlayerView>(R.id.youtube).visibility =
+                                            View.VISIBLE
+                                        binding.play.visibility = View.GONE
+                                    }
 
-                                override fun onInitializationFailure(
-                                    p0: YouTubePlayer.Provider?,
-                                    p1: YouTubeInitializationResult?
-                                ) {
-                                    Log.e("error", "al cargar el video")
-                                }
+                                    override fun onInitializationFailure(
+                                        p0: YouTubePlayer.Provider?,
+                                        p1: YouTubeInitializationResult?
+                                    ) {
+                                        Log.e("error", "al cargar el video")
+                                    }
 
-                            })
-                    }
-                }
+                                })
+                        }
+                    }?: kotlin.run { binding.play.visibility = View.GONE }
+                }?: kotlin.run { binding.play.visibility = View.GONE }
             }
             viewModel.getDetailsMovieLiveData().observeForever(daysObserver)
             viewModel.getLiveDataVideo().observeForever(observerVideo)

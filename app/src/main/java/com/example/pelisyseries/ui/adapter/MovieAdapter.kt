@@ -85,8 +85,8 @@ class MovieAdapter(
 
                     for (item in mItems) {
 
-                        item?.let {
-                            if (item.title.toLowerCase().contains(charString.toLowerCase())) {
+                        item?.let { item ->
+                            if (item.title?.let { it.toLowerCase().contains(charString.toLowerCase()) }?: kotlin.run { false }) {
                                 filteredList.add(item)
                             }
                         }

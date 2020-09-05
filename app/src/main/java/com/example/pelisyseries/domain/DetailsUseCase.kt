@@ -20,8 +20,10 @@ class DetailsUseCase: KoinComponent {
      * Obtiene los detalles de la movie
      * @return devuelve una movie
      */
-    fun getMovie(id: Int): Movie {
-        return repository.getMovie(arrayOf(TableMovie.Columns.COLUMN_NAME_ID), arrayOf(id.toString()), null).first()
+    fun getMovie(id: Int): Movie? {
+        var movies = repository.getMovie(arrayOf(TableMovie.Columns.COLUMN_NAME_ID), arrayOf(id.toString()), null)
+        return if(movies.isNotEmpty()) movies.first()
+        else null
     }
 
     suspend fun getVideo(id: Int): Video? {

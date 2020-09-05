@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
+import androidx.core.database.getStringOrNull
 import com.example.pelisyseries.data.Database
 import com.example.pelisyseries.data.TableMovie
 import com.example.pelisyseries.data.models.Movie
@@ -33,14 +34,16 @@ class GenericRepository: KoinComponent {
     fun insert(item: Movie): Long {
         return try {
             var idsGenre = ""
-            for (id in item.genre_ids) {
-                if (idsGenre.isEmpty()) idsGenre += id
-                else idsGenre += ";$id"
+            item.genre_ids?.let {
+                for (id in item.genre_ids) {
+                    if (idsGenre.isEmpty()) idsGenre += id
+                    else idsGenre += ";$id"
+                }
             }
             val values = ContentValues().apply {
                 put(TableMovie.Columns.COLUMN_NAME_ID, item.id)
                 put(TableMovie.Columns.COLUMN_NAME_IS_ADULT, item.adult)
-                put(TableMovie.Columns.COLUMN_NAME_BACKFROP_PATH, item.backdrop_path)
+                put(TableMovie.Columns.COLUMN_NAME_BACKFROP_PATH, item.backdrop_path?.let { it }?: kotlin.run { "" })
                 put(TableMovie.Columns.COLUMN_NAME_GENRE_ID, idsGenre)
                 put(TableMovie.Columns.COLUMN_NAME_ORIGINAL_LANGAUGE, item.original_language)
                 put(TableMovie.Columns.COLUMN_NAME_ORIGINAL_TITLE, item.original_title)
@@ -68,9 +71,11 @@ class GenericRepository: KoinComponent {
      */
     fun update(item: Movie): Int {
         var idsGenre = ""
-        for (id in item.genre_ids) {
-            if (idsGenre.isEmpty()) idsGenre += id
-            else idsGenre += ";$id"
+        item.genre_ids?.let{
+            for (id in item.genre_ids) {
+                if (idsGenre.isEmpty()) idsGenre += id
+                else idsGenre += ";$id"
+            }
         }
 
         val values = ContentValues().apply {
