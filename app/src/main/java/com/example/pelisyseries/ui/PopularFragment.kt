@@ -32,7 +32,6 @@ import kotlinx.coroutines.Dispatchers.Main
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
-
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 /**
  * Fragment que muestra el primer listado de movies en el viewPager
