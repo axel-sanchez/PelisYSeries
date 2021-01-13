@@ -19,10 +19,10 @@ class MovieUseCase {
      */
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun getMovieList(): MutableList<ItemViewPager> {
-        val listado: MutableList<ItemViewPager> = LinkedList()
-        listado.add(ItemViewPager("Popular", PopularFragment()))
-        listado.add(ItemViewPager("Top Rated", TopRatedFragment()))
-        listado.add(ItemViewPager("Upcoming", UpcomingFragment()))
-        return listado
+        val list: MutableList<ItemViewPager> = LinkedList()
+        list.add(ItemViewPager("Popular", PopularFragment()))
+        list.add(ItemViewPager("Top Rated", TopRatedFragment()))
+        list.add(ItemViewPager("Upcoming", UpcomingFragment()))
+        return list
     }
 }

@@ -15,7 +15,6 @@ import com.example.pelisyseries.ui.adapter.ItemViewPager
 import com.example.pelisyseries.ui.adapter.ViewPageAdapter
 import com.example.pelisyseries.ui.customs.BaseFragment
 import com.example.pelisyseries.viewmodel.MovieViewModel
-import com.example.pelisyseries.viewmodel.MovieViewModelFactory
 
 /**
  * Primer fragment en mostrarse en el activity principal
@@ -23,7 +22,9 @@ import com.example.pelisyseries.viewmodel.MovieViewModelFactory
  */
 class MainFragment: BaseFragment() {
 
-    private val viewModel: MovieViewModel by lazy { ViewModelProviders.of(requireActivity(), MovieViewModelFactory(MovieUseCase())).get(MovieViewModel::class.java) }
+    private val viewModel: MovieViewModel by lazy { ViewModelProviders.of(requireActivity(),
+        MovieViewModel.MovieViewModelFactory(MovieUseCase())
+    ).get(MovieViewModel::class.java) }
 
     override fun onBackPressFragment() = false
 
@@ -50,23 +51,15 @@ class MainFragment: BaseFragment() {
         fragmentMainBinding = null
     }
 
-    /**
-     * Configuramos el [MovieViewModel] para estar a la escucha de nuestro listado de Fragments
-     */
     private fun setupViewModelAndObserve() {
         val daysObserver = Observer<MutableList<ItemViewPager>> {
-            //Actualizar la vista
             setAdapter(it)
         }
         viewModel.getListMoviesLiveData().observe(this, daysObserver)
     }
 
-    /**
-     * Adaptamos el viewPager con los 3 fragments que contienen los listados de peliculas
-     * @param [listado] un mutableLiveData que contiene los [ItemViewPager]
-     */
-    private fun setAdapter(listado: MutableList<ItemViewPager>) {
-        val adapter = ViewPageAdapter(childFragmentManager, listado)
+    private fun setAdapter(list: MutableList<ItemViewPager>) {
+        val adapter = ViewPageAdapter(childFragmentManager, list)
         binding.viewpager.adapter = adapter
         binding.tabs.setupWithViewPager(binding.viewpager)
     }

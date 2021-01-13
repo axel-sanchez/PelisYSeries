@@ -7,34 +7,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
-import androidx.cardview.widget.CardView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.airbnb.lottie.LottieAnimationView
-import com.example.pelisyseries.R
 import com.example.pelisyseries.data.TableMovie
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.repository.GLOBAL
 import com.example.pelisyseries.data.repository.GenericRepository
-import com.example.pelisyseries.data.repository.POPULAR
 import com.example.pelisyseries.data.repository.TOP_RATED
 import com.example.pelisyseries.databinding.FragmentMoviesBinding
 import com.example.pelisyseries.domain.TopRatedUseCase
 import com.example.pelisyseries.ui.adapter.MovieAdapter
 import com.example.pelisyseries.ui.customs.BaseFragment
 import com.example.pelisyseries.viewmodel.TopRatedViewModel
-import com.example.pelisyseries.viewmodel.TopRatedViewModelFactory
 import kotlinx.android.synthetic.main.fragment_movies.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 /**
@@ -47,10 +36,7 @@ class TopRatedFragment : BaseFragment() {
     private val repository: GenericRepository by inject()
 
     private val viewModel: TopRatedViewModel by lazy {
-        ViewModelProviders.of(
-            requireActivity(),
-            TopRatedViewModelFactory(TopRatedUseCase())
-        ).get(TopRatedViewModel::class.java)
+        ViewModelProviders.of(requireActivity(), TopRatedViewModel.TopRatedViewModelFactory(TopRatedUseCase())).get(TopRatedViewModel::class.java)
     }
 
     private lateinit var viewAdapter: MovieAdapter
@@ -61,7 +47,7 @@ class TopRatedFragment : BaseFragment() {
     private var fragmentMainBinding: FragmentMoviesBinding? = null
     private val binding get() = fragmentMainBinding!!
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         fragmentMainBinding = FragmentMoviesBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -74,9 +60,7 @@ class TopRatedFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        CoroutineScope(Main).launch {
-            viewModel.getListMovies(repository)
-        }
+        viewModel.getListMovies(repository)
 
         setupViewModelAndObserve()
     }
@@ -108,9 +92,7 @@ class TopRatedFragment : BaseFragment() {
             })
 
             binding.searchOnline.setOnClickListener {
-                CoroutineScope(Main).launch {
-                    viewModel.getListMoviesFromSearch(binding.search.query.toString())
-                }
+                viewModel.getListMoviesFromSearch(binding.search.query.toString())
                 binding.emptyState.showView(false)
                 binding.emptyStateFilter.showView(false)
                 progress.playAnimation()
@@ -128,8 +110,8 @@ class TopRatedFragment : BaseFragment() {
             recyclerview.showView(true)
 
             for (movie in it) {
-                movie?.let { it ->
-                    it.origen = TOP_RATED
+                movie?.let {
+                    movie.origen = TOP_RATED
                     repository.insert(movie)
                 }
             }
@@ -156,8 +138,8 @@ class TopRatedFragment : BaseFragment() {
             }
 
             for (movie in it) {
-                movie?.let { it ->
-                    it.origen = GLOBAL
+                movie?.let {
+                    movie.origen = GLOBAL
                     repository.insert(movie)
                 }
             }

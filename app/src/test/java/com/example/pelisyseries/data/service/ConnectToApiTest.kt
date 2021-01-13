@@ -14,31 +14,31 @@ class ConnectToApiTest {
 
     private var service: ApiService = retrofit.create(ApiService::class.java)
 
-    @Test fun getPopular() {
+    @Test fun getPopularSuccessfully() {
         assertTrue(service.getPopularTest(API_KEY).execute().isSuccessful)
     }
 
     @Test
-    fun getTopRated() {
+    fun getTopRatedSuccessfully() {
         assertTrue(service.getTopRatedTest(API_KEY).execute().isSuccessful)
     }
 
     @Test
-    fun getUpcoming() {
+    fun getUpcomingSuccessfully() {
         assertTrue(service.getUpcomingTest(API_KEY).execute().isSuccessful)
     }
 
     @Test
-    fun search() {
+    fun searchSuccessfully() {
         assertTrue(service.searchTest(API_KEY, "Iron Man").execute().isSuccessful)
     }
 
     @Test
-    fun getVideo() {
+    fun getVideoSuccessfully() {
         assertTrue(service.getVideoTest("475557", API_KEY).execute().isSuccessful)
     }
 
-    @Test fun errorAutenticacion(){
+    @Test fun errorAuthentication(){
         assertFalse(service.getPopularTest(API_KEY+"sadsa").execute().isSuccessful)
         assertFalse(service.getTopRatedTest(API_KEY+"asdas").execute().isSuccessful)
         assertFalse(service.getUpcomingTest(API_KEY+"asdas").execute().isSuccessful)

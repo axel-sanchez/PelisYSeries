@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
 import androidx.cardview.widget.CardView
@@ -23,19 +22,12 @@ import com.example.pelisyseries.data.TableMovie
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.repository.GLOBAL
 import com.example.pelisyseries.data.repository.GenericRepository
-import com.example.pelisyseries.data.repository.POPULAR
 import com.example.pelisyseries.data.repository.UPCOMING
 import com.example.pelisyseries.databinding.FragmentMoviesBinding
 import com.example.pelisyseries.domain.UpcomingUseCase
 import com.example.pelisyseries.ui.adapter.MovieAdapter
 import com.example.pelisyseries.ui.customs.BaseFragment
 import com.example.pelisyseries.viewmodel.UpcomingViewModel
-import com.example.pelisyseries.viewmodel.UpcomingViewModelFactory
-import kotlinx.android.synthetic.main.fragment_main.*
-import kotlinx.android.synthetic.main.fragment_movies.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 /**
@@ -43,11 +35,16 @@ import org.koin.android.ext.android.inject
  * @author Axel Sanchez
  */
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-class UpcomingFragment: BaseFragment() {
+class UpcomingFragment : BaseFragment() {
 
     private val repository: GenericRepository by inject()
 
-    private val viewModel: UpcomingViewModel by lazy { ViewModelProviders.of(requireActivity(), UpcomingViewModelFactory(UpcomingUseCase())).get(UpcomingViewModel::class.java) }
+    private val viewModel: UpcomingViewModel by lazy {
+        ViewModelProviders.of(
+            requireActivity(),
+            UpcomingViewModel.UpcomingViewModelFactory(UpcomingUseCase())
+        ).get(UpcomingViewModel::class.java)
+    }
 
     private lateinit var viewAdapter: MovieAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
@@ -64,7 +61,7 @@ class UpcomingFragment: BaseFragment() {
     private var fragmentMainBinding: FragmentMoviesBinding? = null
     private val binding get() = fragmentMainBinding!!
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         fragmentMainBinding = FragmentMoviesBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -84,9 +81,7 @@ class UpcomingFragment: BaseFragment() {
         emptyStateFilter = view.findViewById(R.id.empty_state_filter)
         searchOnline = view.findViewById(R.id.search_online)
 
-        CoroutineScope(Main).launch {
-            viewModel.getListMovies(repository)
-        }
+        viewModel.getListMovies(repository)
 
         setupViewModelAndObserve()
     }
@@ -118,9 +113,7 @@ class UpcomingFragment: BaseFragment() {
             })
 
             searchOnline.setOnClickListener {
-                CoroutineScope(Main).launch {
-                    viewModel.getListMoviesFromSearch(searchView.query.toString())
-                }
+                viewModel.getListMoviesFromSearch(searchView.query.toString())
                 emptyState.showView(false)
                 emptyStateFilter.showView(false)
                 progress.playAnimation()
@@ -137,9 +130,9 @@ class UpcomingFragment: BaseFragment() {
             progress.showView(false)
             recyclerview.showView(true)
 
-            for(movie in it){
-                movie?.let{ it ->
-                    it.origen = UPCOMING
+            for (movie in it) {
+                movie?.let {
+                    movie.origen = UPCOMING
                     repository.insert(movie)
                 }
             }
@@ -155,15 +148,19 @@ class UpcomingFragment: BaseFragment() {
             recyclerview.showView(true)
 
             searchView.setOnCloseListener {
-                setAdapter(repository.getMovie(arrayOf(TableMovie.Columns.COLUMN_NAME_ORIGEN_LIST), arrayOf(
-                    UPCOMING
-                ), null))
+                setAdapter(
+                    repository.getMovie(
+                        arrayOf(TableMovie.Columns.COLUMN_NAME_ORIGEN_LIST), arrayOf(
+                            UPCOMING
+                        ), null
+                    )
+                )
                 false
             }
 
-            for(movie in it){
-                movie?.let { it ->
-                    it.origen = GLOBAL
+            for (movie in it) {
+                movie?.let {
+                    movie.origen = GLOBAL
                     repository.insert(movie)
                 }
             }
@@ -201,10 +198,11 @@ class UpcomingFragment: BaseFragment() {
      * Abro el activity con los detalles de cada pelicula
      * @param [item] le paso la pelicula
      */
-    private fun itemClick(item: Movie){
+    private fun itemClick(item: Movie) {
         val intent = Intent(context, DetailsActivity::class.java)
         intent.putExtra("idMovie", item.id)
-        val options = ActivityOptions.makeSceneTransitionAnimation(activity, item.imageView, "main_poster")
+        val options =
+            ActivityOptions.makeSceneTransitionAnimation(activity, item.imageView, "main_poster")
         startActivity(intent, options.toBundle())
     }
 }

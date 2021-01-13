@@ -1,11 +1,10 @@
 package com.example.pelisyseries.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.repository.GenericRepository
 import com.example.pelisyseries.domain.PopularUseCase
+import kotlinx.coroutines.launch
 
 /**
  * View model de [MainFragment]
@@ -24,12 +23,16 @@ class PopularViewModel(private val popularUseCase: PopularUseCase) : ViewModel()
         listDataFromSearch.value = listaMovies
     }
 
-    suspend fun getListMovies(repository: GenericRepository) {
-        setListData(popularUseCase.getMovieList(repository))
+    fun getListMovies(repository: GenericRepository) {
+        viewModelScope.launch {
+            setListData(popularUseCase.getMovieList(repository))
+        }
     }
 
-    suspend fun getListMoviesFromSearch(query: String) {
-        setListDataFromSearch(popularUseCase.getMovieListFromSearch(query))
+    fun getListMoviesFromSearch(query: String) {
+        viewModelScope.launch {
+            setListDataFromSearch(popularUseCase.getMovieListFromSearch(query))
+        }
     }
 
     fun getListMoviesLiveData(): LiveData<List<Movie?>> {
@@ -38,5 +41,12 @@ class PopularViewModel(private val popularUseCase: PopularUseCase) : ViewModel()
 
     fun getListMoviesLiveDataFromSearch(): LiveData<List<Movie?>> {
         return listDataFromSearch
+    }
+
+    class PopularViewModelFactory(private val popularUseCase: PopularUseCase): ViewModelProvider.Factory {
+
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return modelClass.getConstructor(PopularUseCase::class.java).newInstance(popularUseCase)
+        }
     }
 }

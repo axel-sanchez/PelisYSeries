@@ -10,23 +10,16 @@ import androidx.lifecycle.ViewModelProviders
 import com.example.pelisyseries.R
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.models.Video
-import com.example.pelisyseries.data.repository.GenericRepository
 import com.example.pelisyseries.databinding.FragmentDetailsMovieBinding
 import com.example.pelisyseries.domain.DetailsUseCase
 import com.example.pelisyseries.ui.adapter.BASE_URL_IMAGEN
 import com.example.pelisyseries.viewmodel.DetailsViewModel
-import com.example.pelisyseries.viewmodel.DetailsViewModelFactory
 import com.google.android.youtube.player.YouTubeBaseActivity
 import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
 import com.google.android.youtube.player.YouTubePlayerView
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
-import java.lang.Exception
 
 const val API_KEY_YOUTUBE = "AIzaSyCQ6v66wKoSuumIAHFzEUfan3MIS9gpRRc"
 
@@ -49,20 +42,16 @@ class DetailsActivity : YouTubeBaseActivity() {
 
         viewModel = ViewModelProviders.of(
             MainFragment.copyFragment,
-            DetailsViewModelFactory(DetailsUseCase())
+            DetailsViewModel.DetailsViewModelFactory(DetailsUseCase())
         ).get(DetailsViewModel::class.java)
 
         binding.image.transitionName = "main_poster"
 
         val idMovie = intent.extras!!.getInt("idMovie")
 
-        CoroutineScope(Dispatchers.Main).launch {
-            viewModel.getDetailsMovie(idMovie)
-        }
+        viewModel.getDetailsMovie(idMovie)
 
-        CoroutineScope(Dispatchers.Main).launch {
-            viewModel.getVideo(idMovie)
-        }
+        viewModel.getVideo(idMovie)
 
         setupViewModelAndObserve()
     }
@@ -79,8 +68,10 @@ class DetailsActivity : YouTubeBaseActivity() {
                     binding.calificacion.text = it.vote_average.toString()
                     binding.categoria.text = it.origen
                     binding.overview.text = it.overview
-                    it.release_date?.let { releaseDate -> binding.date.text = releaseDate.substring(0, 4) }
-                    it.adult?.let {adult ->
+                    it.release_date?.let { releaseDate ->
+                        binding.date.text = releaseDate.substring(0, 4)
+                    }
+                    it.adult?.let { adult ->
                         if (adult) binding.edad.visibility = View.VISIBLE
                         else binding.edad.visibility = View.GONE
                     }
@@ -103,7 +94,7 @@ class DetailsActivity : YouTubeBaseActivity() {
                 var key: String?
                 it?.let {
                     key = it.key
-                    key?.let{
+                    key?.let {
                         binding.play.visibility = View.VISIBLE
                         binding.play.setOnClickListener {
                             findViewById<YouTubePlayerView>(R.id.youtube).initialize(
@@ -129,8 +120,8 @@ class DetailsActivity : YouTubeBaseActivity() {
 
                                 })
                         }
-                    }?: kotlin.run { binding.play.visibility = View.GONE }
-                }?: kotlin.run { binding.play.visibility = View.GONE }
+                    } ?: kotlin.run { binding.play.visibility = View.GONE }
+                } ?: kotlin.run { binding.play.visibility = View.GONE }
             }
             viewModel.getDetailsMovieLiveData().observeForever(daysObserver)
             viewModel.getLiveDataVideo().observeForever(observerVideo)

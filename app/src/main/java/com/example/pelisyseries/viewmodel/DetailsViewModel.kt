@@ -1,11 +1,10 @@
 package com.example.pelisyseries.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.models.Video
 import com.example.pelisyseries.domain.DetailsUseCase
+import kotlinx.coroutines.launch
 import java.lang.Exception
 
 /**
@@ -26,11 +25,15 @@ class DetailsViewModel(private val detailsUseCase: DetailsUseCase) : ViewModel()
     }
 
     fun getDetailsMovie(id: Int) {
-        setListData(detailsUseCase.getMovie(id))
+        viewModelScope.launch {
+            setListData(detailsUseCase.getMovie(id))
+        }
     }
 
-    suspend fun getVideo(id: Int) {
-        setListDataVideo(detailsUseCase.getVideo(id))
+    fun getVideo(id: Int) {
+        viewModelScope.launch {
+            setListDataVideo(detailsUseCase.getVideo(id))
+        }
     }
 
     fun getDetailsMovieLiveData(): LiveData<Movie?> {
@@ -39,5 +42,11 @@ class DetailsViewModel(private val detailsUseCase: DetailsUseCase) : ViewModel()
 
     fun getLiveDataVideo(): LiveData<Video?> {
         return listDataVideo
+    }
+
+    class DetailsViewModelFactory(private val detailsUseCase: DetailsUseCase): ViewModelProvider.Factory {
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return modelClass.getConstructor(DetailsUseCase::class.java).newInstance(detailsUseCase)
+        }
     }
 }

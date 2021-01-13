@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.pelisyseries.domain.MovieUseCase
 import com.example.pelisyseries.ui.adapter.ItemViewPager
 
@@ -16,8 +17,8 @@ class MovieViewModel(private val movieUseCase: MovieUseCase) : ViewModel() {
 
     private val listData = MutableLiveData<MutableList<ItemViewPager>>()
 
-    private fun setListData(listaMovies: MutableList<ItemViewPager>) {
-        listData.value = listaMovies
+    private fun setListData(moviesList: MutableList<ItemViewPager>) {
+        listData.value = moviesList
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -27,5 +28,12 @@ class MovieViewModel(private val movieUseCase: MovieUseCase) : ViewModel() {
 
     fun getListMoviesLiveData(): LiveData<MutableList<ItemViewPager>> {
         return listData
+    }
+
+    class MovieViewModelFactory(private val movieUseCase: MovieUseCase): ViewModelProvider.Factory {
+
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return modelClass.getConstructor(MovieUseCase::class.java).newInstance(movieUseCase)
+        }
     }
 }

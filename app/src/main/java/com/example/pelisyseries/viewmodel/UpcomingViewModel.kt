@@ -1,11 +1,10 @@
 package com.example.pelisyseries.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.repository.GenericRepository
 import com.example.pelisyseries.domain.UpcomingUseCase
+import kotlinx.coroutines.launch
 
 /**
  * View model de [UpcomingFragment]
@@ -16,20 +15,24 @@ class UpcomingViewModel(private val upcomingUseCase: UpcomingUseCase) : ViewMode
     private val listData = MutableLiveData<List<Movie?>>()
     private val listDataFromSearch = MutableLiveData<List<Movie?>>()
 
-    private fun setListData(listaMovies: List<Movie?>) {
-        listData.value = listaMovies
+    private fun setListData(moviesList: List<Movie?>) {
+        listData.value = moviesList
     }
 
-    private fun setListDataFromSearch(listaMovies: List<Movie?>) {
-        listDataFromSearch.value = listaMovies
+    private fun setListDataFromSearch(moviesList: List<Movie?>) {
+        listDataFromSearch.value = moviesList
     }
 
-    suspend fun getListMovies(repository: GenericRepository) {
-        setListData(upcomingUseCase.getMovieList(repository))
+    fun getListMovies(repository: GenericRepository) {
+        viewModelScope.launch {
+            setListData(upcomingUseCase.getMovieList(repository))
+        }
     }
 
-    suspend fun getListMoviesFromSearch(query: String) {
-        setListDataFromSearch(upcomingUseCase.getMovieListFromSearch(query))
+    fun getListMoviesFromSearch(query: String) {
+        viewModelScope.launch {
+            setListDataFromSearch(upcomingUseCase.getMovieListFromSearch(query))
+        }
     }
 
     fun getListMoviesLiveData(): LiveData<List<Movie?>> {
@@ -38,5 +41,12 @@ class UpcomingViewModel(private val upcomingUseCase: UpcomingUseCase) : ViewMode
 
     fun getListMoviesLiveDataFromSearch(): LiveData<List<Movie?>> {
         return listDataFromSearch
+    }
+
+    class UpcomingViewModelFactory(private val upcomingUseCase: UpcomingUseCase): ViewModelProvider.Factory {
+
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return modelClass.getConstructor(UpcomingUseCase::class.java).newInstance(upcomingUseCase)
+        }
     }
 }

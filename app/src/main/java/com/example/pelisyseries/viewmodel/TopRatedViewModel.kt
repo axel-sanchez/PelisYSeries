@@ -1,11 +1,10 @@
 package com.example.pelisyseries.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.repository.GenericRepository
 import com.example.pelisyseries.domain.TopRatedUseCase
+import kotlinx.coroutines.launch
 
 /**
  * View model de [TopRatedFragment]
@@ -24,12 +23,16 @@ class TopRatedViewModel(private val topRatedUseCase: TopRatedUseCase) : ViewMode
         listDataFromSearch.value = listaMovies
     }
 
-    suspend fun getListMovies(repository: GenericRepository) {
-        setListData(topRatedUseCase.getMovieList(repository))
+    fun getListMovies(repository: GenericRepository) {
+        viewModelScope.launch {
+            setListData(topRatedUseCase.getMovieList(repository))
+        }
     }
 
-    suspend fun getListMoviesFromSearch(query: String) {
-        setListDataFromSearch(topRatedUseCase.getMovieListFromSearch(query))
+    fun getListMoviesFromSearch(query: String) {
+        viewModelScope.launch {
+            setListDataFromSearch(topRatedUseCase.getMovieListFromSearch(query))
+        }
     }
 
     fun getListMoviesLiveData(): LiveData<List<Movie?>> {
@@ -38,5 +41,12 @@ class TopRatedViewModel(private val topRatedUseCase: TopRatedUseCase) : ViewMode
 
     fun getListMoviesLiveDataFromSearch(): LiveData<List<Movie?>> {
         return listDataFromSearch
+    }
+
+    class TopRatedViewModelFactory(private val topRatedUseCase: TopRatedUseCase): ViewModelProvider.Factory {
+
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            return modelClass.getConstructor(TopRatedUseCase::class.java).newInstance(topRatedUseCase)
+        }
     }
 }
