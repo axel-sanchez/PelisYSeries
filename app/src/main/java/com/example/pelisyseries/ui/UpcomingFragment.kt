@@ -40,10 +40,7 @@ class UpcomingFragment : BaseFragment() {
     private val repository: GenericRepository by inject()
 
     private val viewModel: UpcomingViewModel by lazy {
-        ViewModelProviders.of(
-            requireActivity(),
-            UpcomingViewModel.UpcomingViewModelFactory(UpcomingUseCase())
-        ).get(UpcomingViewModel::class.java)
+        ViewModelProviders.of(requireActivity(), UpcomingViewModel.UpcomingViewModelFactory(UpcomingUseCase())).get(UpcomingViewModel::class.java)
     }
 
     private lateinit var viewAdapter: MovieAdapter

@@ -35,10 +35,7 @@ class PopularFragment : BaseFragment() {
     private val repository: GenericRepository by inject()
 
     private val viewModel: PopularViewModel by lazy {
-        ViewModelProviders.of(
-            requireActivity(),
-            PopularViewModel.PopularViewModelFactory(PopularUseCase())
-        ).get(PopularViewModel::class.java)
+        ViewModelProviders.of(requireActivity(), PopularViewModel.PopularViewModelFactory(PopularUseCase())).get(PopularViewModel::class.java)
     }
 
     private lateinit var viewAdapter: MovieAdapter
@@ -49,11 +46,7 @@ class PopularFragment : BaseFragment() {
     private var fragmentMainBinding: FragmentMoviesBinding? = null
     private val binding get() = fragmentMainBinding!!
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         fragmentMainBinding = FragmentMoviesBinding.inflate(inflater, container, false)
         return binding.root
     }
