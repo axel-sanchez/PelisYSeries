@@ -9,10 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.pelisyseries.common.hide
+import com.example.pelisyseries.common.show
 import com.example.pelisyseries.data.TableMovie
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.repository.GLOBAL
@@ -21,7 +24,6 @@ import com.example.pelisyseries.data.repository.POPULAR
 import com.example.pelisyseries.databinding.FragmentMoviesBinding
 import com.example.pelisyseries.domain.PopularUseCase
 import com.example.pelisyseries.ui.adapter.MovieAdapter
-import com.example.pelisyseries.ui.customs.BaseFragment
 import com.example.pelisyseries.viewmodel.PopularViewModel
 import org.koin.android.ext.android.inject
 
@@ -30,7 +32,7 @@ import org.koin.android.ext.android.inject
  * Fragment que muestra el primer listado de movies en el viewPager
  * @author Axel Sanchez
  */
-class PopularFragment : BaseFragment() {
+class PopularFragment : Fragment() {
 
     private val repository: GenericRepository by inject()
 
@@ -40,8 +42,6 @@ class PopularFragment : BaseFragment() {
 
     private lateinit var viewAdapter: MovieAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
-
-    override fun onBackPressFragment() = false
 
     private var fragmentMainBinding: FragmentMoviesBinding? = null
     private val binding get() = fragmentMainBinding!!
@@ -64,27 +64,23 @@ class PopularFragment : BaseFragment() {
         setupViewModelAndObserve()
     }
 
-    /**
-     * Configuramos el viewModel para estar a la escucha de nuestra petición a la api de peliculas
-     * Y también va a estar a la escucha de cuando buscamos el video de la pelicula
-     */
     private fun setupViewModelAndObserve() {
         val daysObserver = Observer<List<Movie?>> {
             binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     if (viewAdapter.getItems().isNullOrEmpty()) {
-                        binding.emptyState.showView(true)
-                        binding.emptyStateFilter.showView(true)
+                        binding.emptyState.show()
+                        binding.emptyStateFilter.show()
                     } else {
-                        binding.emptyState.showView(false)
-                        binding.emptyStateFilter.showView(false)
+                        binding.emptyState.hide()
+                        binding.emptyStateFilter.hide()
                     }
                     return false
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    binding.emptyState.showView(false)
-                    binding.emptyStateFilter.showView(false)
+                    binding.emptyState.hide()
+                    binding.emptyStateFilter.hide()
                     viewAdapter.filter.filter(newText)
                     return false
                 }
@@ -92,21 +88,21 @@ class PopularFragment : BaseFragment() {
 
             binding.searchOnline.setOnClickListener {
                 viewModel.getListMoviesFromSearch(binding.search.query.toString())
-                binding.emptyState.showView(false)
-                binding.emptyStateFilter.showView(false)
+                binding.emptyState.hide()
+                binding.emptyStateFilter.hide()
                 binding.progress.playAnimation()
-                binding.progress.showView(true)
+                binding.progress.show()
             }
 
             binding.search.setOnCloseListener {
-                binding.emptyState.showView(false)
-                binding.emptyStateFilter.showView(false)
+                binding.emptyState.hide()
+                binding.emptyStateFilter.hide()
                 false
             }
 
             binding.progress.cancelAnimation()
-            binding.progress.showView(false)
-            binding.recyclerview.showView(true)
+            binding.progress.hide()
+            binding.recyclerview.show()
 
             for (movie in it) {
                 movie?.let {
@@ -119,11 +115,11 @@ class PopularFragment : BaseFragment() {
         }
 
         val searchObserver = Observer<List<Movie?>> {
-            binding.emptyState.showView(false)
-            binding.emptyStateFilter.showView(false)
+            binding.emptyState.hide()
+            binding.emptyStateFilter.hide()
             binding.progress.cancelAnimation()
-            binding.progress.showView(false)
-            binding.recyclerview.showView(true)
+            binding.progress.hide()
+            binding.recyclerview.show()
 
             binding.search.setOnCloseListener {
                 setAdapter(
@@ -150,10 +146,6 @@ class PopularFragment : BaseFragment() {
         viewModel.getListMoviesLiveDataFromSearch().observe(viewLifecycleOwner, searchObserver)
     }
 
-    /**
-     * Adaptamos el recyclerview de peliculas
-     * @param [movies] listado de peliculas
-     */
     private fun setAdapter(movies: List<Movie?>) {
 
         viewAdapter = MovieAdapter(movies) { itemClick(it) }
@@ -172,10 +164,6 @@ class PopularFragment : BaseFragment() {
         }
     }
 
-    /**
-     * Abro el activity con los detalles de cada pelicula
-     * @param [item] le paso la pelicula
-     */
     private fun itemClick(item: Movie) {
         val intent = Intent(context, DetailsActivity::class.java)
         intent.putExtra("idMovie", item.id)

@@ -15,12 +15,12 @@ class PopularViewModel(private val popularUseCase: PopularUseCase) : ViewModel()
     private val listData = MutableLiveData<List<Movie?>>()
     private val listDataFromSearch = MutableLiveData<List<Movie?>>()
 
-    private fun setListData(listaMovies: List<Movie?>) {
-        listData.value = listaMovies
+    private fun setListData(moviesList: List<Movie?>) {
+        listData.value = moviesList
     }
 
-    private fun setListDataFromSearch(listaMovies: List<Movie?>) {
-        listDataFromSearch.value = listaMovies
+    private fun setListDataFromSearch(moviesList: List<Movie?>) {
+        listDataFromSearch.value = moviesList
     }
 
     fun getListMovies(repository: GenericRepository) {

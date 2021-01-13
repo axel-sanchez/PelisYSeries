@@ -12,12 +12,15 @@ import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
 import androidx.cardview.widget.CardView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.example.pelisyseries.R
+import com.example.pelisyseries.common.hide
+import com.example.pelisyseries.common.show
 import com.example.pelisyseries.data.TableMovie
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.repository.GLOBAL
@@ -26,7 +29,6 @@ import com.example.pelisyseries.data.repository.UPCOMING
 import com.example.pelisyseries.databinding.FragmentMoviesBinding
 import com.example.pelisyseries.domain.UpcomingUseCase
 import com.example.pelisyseries.ui.adapter.MovieAdapter
-import com.example.pelisyseries.ui.customs.BaseFragment
 import com.example.pelisyseries.viewmodel.UpcomingViewModel
 import org.koin.android.ext.android.inject
 
@@ -35,7 +37,7 @@ import org.koin.android.ext.android.inject
  * @author Axel Sanchez
  */
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-class UpcomingFragment : BaseFragment() {
+class UpcomingFragment : Fragment() {
 
     private val repository: GenericRepository by inject()
 
@@ -52,8 +54,6 @@ class UpcomingFragment : BaseFragment() {
     private lateinit var emptyState: CardView
     private lateinit var emptyStateFilter: LinearLayout
     private lateinit var searchOnline: Button
-
-    override fun onBackPressFragment() = false
 
     private var fragmentMainBinding: FragmentMoviesBinding? = null
     private val binding get() = fragmentMainBinding!!
@@ -92,18 +92,18 @@ class UpcomingFragment : BaseFragment() {
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     if (viewAdapter.getItems().isNullOrEmpty()) {
-                        emptyState.showView(true)
-                        emptyStateFilter.showView(true)
+                        emptyState.show()
+                        emptyStateFilter.show()
                     } else {
-                        emptyState.showView(false)
-                        emptyStateFilter.showView(false)
+                        emptyState.hide()
+                        emptyStateFilter.hide()
                     }
                     return false
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    emptyState.showView(false)
-                    emptyStateFilter.showView(false)
+                    emptyState.hide()
+                    emptyStateFilter.hide()
                     viewAdapter.filter.filter(newText)
                     return false
                 }
@@ -111,21 +111,21 @@ class UpcomingFragment : BaseFragment() {
 
             searchOnline.setOnClickListener {
                 viewModel.getListMoviesFromSearch(searchView.query.toString())
-                emptyState.showView(false)
-                emptyStateFilter.showView(false)
+                emptyState.hide()
+                emptyStateFilter.hide()
                 progress.playAnimation()
-                progress.showView(true)
+                progress.show()
             }
 
             searchView.setOnCloseListener {
-                emptyState.showView(false)
-                emptyStateFilter.showView(false)
+                emptyState.hide()
+                emptyStateFilter.hide()
                 false
             }
 
             progress.cancelAnimation()
-            progress.showView(false)
-            recyclerview.showView(true)
+            progress.hide()
+            recyclerview.show()
 
             for (movie in it) {
                 movie?.let {
@@ -138,11 +138,11 @@ class UpcomingFragment : BaseFragment() {
         }
 
         val searchObserver = Observer<List<Movie?>> {
-            emptyState.showView(false)
-            emptyStateFilter.showView(false)
+            emptyState.hide()
+            emptyStateFilter.hide()
             progress.cancelAnimation()
-            progress.showView(false)
-            recyclerview.showView(true)
+            progress.hide()
+            recyclerview.show()
 
             searchView.setOnCloseListener {
                 setAdapter(
@@ -191,10 +191,6 @@ class UpcomingFragment : BaseFragment() {
         }
     }
 
-    /**
-     * Abro el activity con los detalles de cada pelicula
-     * @param [item] le paso la pelicula
-     */
     private fun itemClick(item: Movie) {
         val intent = Intent(context, DetailsActivity::class.java)
         intent.putExtra("idMovie", item.id)
