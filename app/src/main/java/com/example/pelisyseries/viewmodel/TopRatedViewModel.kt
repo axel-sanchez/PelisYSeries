@@ -2,7 +2,7 @@ package com.example.pelisyseries.viewmodel
 
 import androidx.lifecycle.*
 import com.example.pelisyseries.data.models.Movie
-import com.example.pelisyseries.data.repository.GenericRepository
+import com.example.pelisyseries.data.room.ProductDao
 import com.example.pelisyseries.domain.TopRatedUseCase
 import kotlinx.coroutines.launch
 
@@ -23,7 +23,7 @@ class TopRatedViewModel(private val topRatedUseCase: TopRatedUseCase) : ViewMode
         listDataFromSearch.value = listaMovies
     }
 
-    fun getListMovies(repository: GenericRepository) {
+    fun getListMovies(repository: ProductDao) {
         viewModelScope.launch {
             setListData(topRatedUseCase.getMovieList(repository))
         }

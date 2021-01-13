@@ -12,20 +12,21 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pelisyseries.common.hide
 import com.example.pelisyseries.common.show
-import com.example.pelisyseries.data.TableMovie
+import com.example.pelisyseries.data.models.GLOBAL
 import com.example.pelisyseries.data.models.Movie
-import com.example.pelisyseries.data.repository.GLOBAL
-import com.example.pelisyseries.data.repository.GenericRepository
-import com.example.pelisyseries.data.repository.TOP_RATED
+import com.example.pelisyseries.data.models.TOP_RATED
+import com.example.pelisyseries.data.room.ProductDao
 import com.example.pelisyseries.databinding.FragmentMoviesBinding
 import com.example.pelisyseries.domain.TopRatedUseCase
 import com.example.pelisyseries.ui.adapter.MovieAdapter
 import com.example.pelisyseries.viewmodel.TopRatedViewModel
 import kotlinx.android.synthetic.main.fragment_movies.*
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 /**
@@ -35,7 +36,7 @@ import org.koin.android.ext.android.inject
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class TopRatedFragment : Fragment() {
 
-    private val repository: GenericRepository by inject()
+    private val repository: ProductDao by inject()
 
     private val viewModel: TopRatedViewModel by lazy {
         ViewModelProviders.of(requireActivity(), TopRatedViewModel.TopRatedViewModelFactory(TopRatedUseCase())).get(TopRatedViewModel::class.java)
@@ -108,7 +109,9 @@ class TopRatedFragment : Fragment() {
             for (movie in it) {
                 movie?.let {
                     movie.origen = TOP_RATED
-                    repository.insert(movie)
+                    lifecycleScope.launch {
+                        repository.insertMovie(movie)
+                    }
                 }
             }
 
@@ -123,20 +126,18 @@ class TopRatedFragment : Fragment() {
             recyclerview.show()
 
             binding.search.setOnCloseListener {
-                setAdapter(
-                    repository.getMovie(
-                        arrayOf(TableMovie.Columns.COLUMN_NAME_ORIGEN_LIST), arrayOf(
-                            TOP_RATED
-                        ), null
-                    )
-                )
+                lifecycleScope.launch {
+                    setAdapter(repository.getMovieByOrigin(TOP_RATED))
+                }
                 false
             }
 
             for (movie in it) {
                 movie?.let {
                     movie.origen = GLOBAL
-                    repository.insert(movie)
+                    lifecycleScope.launch {
+                        repository.insertMovie(movie)
+                    }
                 }
             }
 

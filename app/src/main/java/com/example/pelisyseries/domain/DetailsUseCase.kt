@@ -1,9 +1,8 @@
 package com.example.pelisyseries.domain
 
-import com.example.pelisyseries.data.TableMovie
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.models.Video
-import com.example.pelisyseries.data.repository.GenericRepository
+import com.example.pelisyseries.data.room.ProductDao
 import com.example.pelisyseries.data.service.ConnectToApi
 import org.koin.standalone.KoinComponent
 import org.koin.standalone.inject
@@ -14,19 +13,19 @@ import org.koin.standalone.inject
  */
 class DetailsUseCase: KoinComponent {
     private val api: ConnectToApi by inject()
-    private val repository: GenericRepository by inject()
+    private val repository: ProductDao by inject()
 
     /**
      * Obtiene los detalles de la movie
      * @return devuelve una movie
      */
-    fun getMovie(id: Int): Movie? {
-        var movies = repository.getMovie(arrayOf(TableMovie.Columns.COLUMN_NAME_ID), arrayOf(id.toString()), null)
+    suspend fun getMovie(id: Long): Movie? {
+        var movies = repository.getMovieById(id)
         return if(movies.isNotEmpty()) movies.first()
         else null
     }
 
-    suspend fun getVideo(id: Int): Video? {
+    suspend fun getVideo(id: Long): Video? {
         var response = api.getVideo(id)
         return response.value?.let {
             if(it.isNotEmpty()) it.first()

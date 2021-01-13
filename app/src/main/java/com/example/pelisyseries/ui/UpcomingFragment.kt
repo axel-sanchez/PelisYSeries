@@ -15,21 +15,23 @@ import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.example.pelisyseries.R
 import com.example.pelisyseries.common.hide
 import com.example.pelisyseries.common.show
-import com.example.pelisyseries.data.TableMovie
+import com.example.pelisyseries.data.models.GLOBAL
 import com.example.pelisyseries.data.models.Movie
-import com.example.pelisyseries.data.repository.GLOBAL
-import com.example.pelisyseries.data.repository.GenericRepository
-import com.example.pelisyseries.data.repository.UPCOMING
+import com.example.pelisyseries.data.models.UPCOMING
+import com.example.pelisyseries.data.room.Database
+import com.example.pelisyseries.data.room.ProductDao
 import com.example.pelisyseries.databinding.FragmentMoviesBinding
 import com.example.pelisyseries.domain.UpcomingUseCase
 import com.example.pelisyseries.ui.adapter.MovieAdapter
 import com.example.pelisyseries.viewmodel.UpcomingViewModel
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 /**
@@ -39,7 +41,7 @@ import org.koin.android.ext.android.inject
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class UpcomingFragment : Fragment() {
 
-    private val repository: GenericRepository by inject()
+    private val repository: ProductDao by inject()
 
     private val viewModel: UpcomingViewModel by lazy {
         ViewModelProviders.of(requireActivity(), UpcomingViewModel.UpcomingViewModelFactory(UpcomingUseCase())).get(UpcomingViewModel::class.java)
@@ -130,7 +132,9 @@ class UpcomingFragment : Fragment() {
             for (movie in it) {
                 movie?.let {
                     movie.origen = UPCOMING
-                    repository.insert(movie)
+                    lifecycleScope.launch {
+                        repository.insertMovie(movie)
+                    }
                 }
             }
 
@@ -145,20 +149,18 @@ class UpcomingFragment : Fragment() {
             recyclerview.show()
 
             searchView.setOnCloseListener {
-                setAdapter(
-                    repository.getMovie(
-                        arrayOf(TableMovie.Columns.COLUMN_NAME_ORIGEN_LIST), arrayOf(
-                            UPCOMING
-                        ), null
-                    )
-                )
+                lifecycleScope.launch {
+                    setAdapter(repository.getMovieByOrigin(UPCOMING))
+                }
                 false
             }
 
             for (movie in it) {
                 movie?.let {
                     movie.origen = GLOBAL
-                    repository.insert(movie)
+                    lifecycleScope.launch {
+                        repository.insertMovie(movie)
+                    }
                 }
             }
 

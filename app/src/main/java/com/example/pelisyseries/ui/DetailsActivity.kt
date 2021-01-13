@@ -47,7 +47,7 @@ class DetailsActivity : YouTubeBaseActivity() {
 
         binding.image.transitionName = "main_poster"
 
-        val idMovie = intent.extras!!.getInt("idMovie")
+        val idMovie = intent.extras!!.getLong("idMovie")
 
         viewModel.getDetailsMovie(idMovie)
 

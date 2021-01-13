@@ -1,10 +1,8 @@
 package com.example.pelisyseries.domain
 
-import com.example.pelisyseries.data.TableMovie
 import com.example.pelisyseries.data.models.Movie
-import com.example.pelisyseries.data.repository.GenericRepository
-import com.example.pelisyseries.data.repository.TOP_RATED
-import com.example.pelisyseries.data.repository.UPCOMING
+import com.example.pelisyseries.data.models.UPCOMING
+import com.example.pelisyseries.data.room.ProductDao
 import com.example.pelisyseries.data.service.ConnectToApi
 import org.koin.standalone.KoinComponent
 import org.koin.standalone.inject
@@ -21,9 +19,9 @@ class UpcomingUseCase: KoinComponent {
      * @param [repository] objeto que manipula la database
      * @return devuelve un listado de movies próximas a estrenar
      */
-    suspend fun getMovieList(repository: GenericRepository): List<Movie?> {
+    suspend fun getMovieList(repository: ProductDao): List<Movie?> {
 
-        var movies = repository.getMovie(arrayOf(TableMovie.Columns.COLUMN_NAME_ORIGEN_LIST), arrayOf(UPCOMING), null)
+        var movies = repository.getMovieByOrigin(UPCOMING)
 
         return if (movies.isEmpty()) {
             var response = api.getUpcoming()

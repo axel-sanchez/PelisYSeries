@@ -24,13 +24,13 @@ class DetailsViewModel(private val detailsUseCase: DetailsUseCase) : ViewModel()
         listDataVideo.value = video
     }
 
-    fun getDetailsMovie(id: Int) {
+    fun getDetailsMovie(id: Long) {
         viewModelScope.launch {
             setListData(detailsUseCase.getMovie(id))
         }
     }
 
-    fun getVideo(id: Int) {
+    fun getVideo(id: Long) {
         viewModelScope.launch {
             setListDataVideo(detailsUseCase.getVideo(id))
         }

@@ -2,13 +2,11 @@ package com.example.pelisyseries.data.service
 
 import androidx.lifecycle.MutableLiveData
 import com.example.pelisyseries.data.models.Movie
+import com.example.pelisyseries.data.models.UPCOMING
 import com.example.pelisyseries.data.models.Video
-import com.example.pelisyseries.data.repository.GenericRepository
-import com.example.pelisyseries.data.repository.UPCOMING
+import com.example.pelisyseries.data.room.ProductDao
 import org.koin.standalone.KoinComponent
 import org.koin.standalone.inject
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 const val BASE_URL = "https://api.themoviedb.org/3/"
 const val API_KEY = "a0de5a9fe43359e41cb94081d6bafc05" //(AUTH V3)
@@ -19,7 +17,7 @@ const val API_KEY = "a0de5a9fe43359e41cb94081d6bafc05" //(AUTH V3)
  */
 class ConnectToApi: KoinComponent {
     private val service: ApiService by inject()
-    private val repository: GenericRepository by inject()
+    private val repository: ProductDao by inject()
 
     /**
      * Esta función es la encargada de retornar las movies mas populares
@@ -56,7 +54,7 @@ class ConnectToApi: KoinComponent {
         response.body()?.let {
             for(movie in it.results){
                 movie.origen = UPCOMING
-                repository.insert(movie)
+                repository.insertMovie(movie)
             }
         }
 
@@ -83,7 +81,7 @@ class ConnectToApi: KoinComponent {
      * @param [id] id de la pelicula
      * @return devuelve un mutableLiveData que contiene un listado de [Video]
      */
-    suspend fun getVideo(id: Int): MutableLiveData<List<Video?>> {
+    suspend fun getVideo(id: Long): MutableLiveData<List<Video?>> {
         var mutableLiveData = MutableLiveData<List<Video?>>()
         var response = service.getVideo(id.toString(), API_KEY)
         if(response.isSuccessful) mutableLiveData.value = response.body()?.let{ it.results }?: kotlin.run { listOf() }

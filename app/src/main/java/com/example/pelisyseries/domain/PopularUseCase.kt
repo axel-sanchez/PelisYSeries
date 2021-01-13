@@ -1,9 +1,8 @@
 package com.example.pelisyseries.domain
 
-import com.example.pelisyseries.data.TableMovie
 import com.example.pelisyseries.data.models.Movie
-import com.example.pelisyseries.data.repository.GenericRepository
-import com.example.pelisyseries.data.repository.POPULAR
+import com.example.pelisyseries.data.models.POPULAR
+import com.example.pelisyseries.data.room.ProductDao
 import com.example.pelisyseries.data.service.ConnectToApi
 import org.koin.standalone.KoinComponent
 import org.koin.standalone.inject
@@ -20,9 +19,9 @@ class PopularUseCase: KoinComponent {
      * @param [repository] objeto que sirve para hacer llamadas a la database
      * @return devuelve un listado de movies populares
      */
-    suspend fun getMovieList(repository: GenericRepository): List<Movie?> {
+    suspend fun getMovieList(repository: ProductDao): List<Movie?> {
 
-        var movies = repository.getMovie(arrayOf(TableMovie.Columns.COLUMN_NAME_ORIGEN_LIST), arrayOf(POPULAR), null)
+        var movies = repository.getMovieByOrigin(POPULAR)
 
         return if(movies.isEmpty()){
             var response = api.getPopular()

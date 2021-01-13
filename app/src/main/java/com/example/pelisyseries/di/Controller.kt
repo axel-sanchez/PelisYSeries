@@ -1,10 +1,11 @@
 package com.example.pelisyseries.di
 
-import com.example.pelisyseries.data.Database
-import com.example.pelisyseries.data.repository.GenericRepository
+import androidx.room.Room
+import com.example.pelisyseries.data.room.Database
 import com.example.pelisyseries.data.service.ApiService
 import com.example.pelisyseries.data.service.BASE_URL
 import com.example.pelisyseries.data.service.ConnectToApi
+import com.google.gson.Gson
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module.module
 import retrofit2.Retrofit
@@ -21,6 +22,12 @@ val moduleApp = module{
         .build() }
     single { (get() as Retrofit).create(ApiService::class.java) }
     single {  ConnectToApi() }
-    single { Database(androidContext()) }
-    single { GenericRepository() }
+
+    single { Room
+        .databaseBuilder(androidContext(), Database::class.java, "moviesAndSeriesDB.db3")
+        .build() }
+
+    single { Gson() }
+
+    single { (get() as Database).productDao() }
 }
