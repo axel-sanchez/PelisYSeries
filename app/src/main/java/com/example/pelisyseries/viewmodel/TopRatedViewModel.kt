@@ -10,26 +10,36 @@ import kotlinx.coroutines.launch
  * View model de [TopRatedFragment]
  * @author Axel Sanchez
  */
-class TopRatedViewModel(private val topRatedUseCase: TopRatedUseCase) : ViewModel() {
+class TopRatedViewModel(private val topRatedUseCase: TopRatedUseCase, private val repository: ProductDao) : ViewModel() {
 
-    private val listData = MutableLiveData<List<Movie?>>()
-    private val listDataFromSearch = MutableLiveData<List<Movie?>>()
+    private var query = ""
 
-    private fun setListData(listaMovies: List<Movie?>) {
-        listData.value = listaMovies
+    private val listData: MutableLiveData<List<Movie?>> by lazy {
+        MutableLiveData<List<Movie?>>().also {
+            getListMovies(repository)
+        }
+    }
+    private val listDataFromSearch: MutableLiveData<List<Movie?>> by lazy {
+        MutableLiveData<List<Movie?>>().also {
+            getListMoviesFromSearch(query)
+        }
     }
 
-    private fun setListDataFromSearch(listaMovies: List<Movie?>) {
-        listDataFromSearch.value = listaMovies
+    private fun setListData(moviesList: List<Movie?>) {
+        listData.value = moviesList
     }
 
-    fun getListMovies(repository: ProductDao) {
+    private fun setListDataFromSearch(moviesList: List<Movie?>) {
+        listDataFromSearch.value = moviesList
+    }
+
+    private fun getListMovies(repository: ProductDao) {
         viewModelScope.launch {
             setListData(topRatedUseCase.getMovieList(repository))
         }
     }
 
-    fun getListMoviesFromSearch(query: String) {
+    private fun getListMoviesFromSearch(query: String) {
         viewModelScope.launch {
             setListDataFromSearch(topRatedUseCase.getMovieListFromSearch(query))
         }
@@ -43,10 +53,16 @@ class TopRatedViewModel(private val topRatedUseCase: TopRatedUseCase) : ViewMode
         return listDataFromSearch
     }
 
-    class TopRatedViewModelFactory(private val topRatedUseCase: TopRatedUseCase): ViewModelProvider.Factory {
+    fun changeQuery(newQuery: String){
+        query = newQuery
+        getListMoviesFromSearch(query)
+    }
+
+    class TopRatedViewModelFactory(private val topRatedUseCase: TopRatedUseCase,
+                                   private val repository: ProductDao): ViewModelProvider.Factory {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return modelClass.getConstructor(TopRatedUseCase::class.java).newInstance(topRatedUseCase)
+            return modelClass.getConstructor(TopRatedUseCase::class.java, ProductDao::class.java).newInstance(topRatedUseCase, repository)
         }
     }
 }

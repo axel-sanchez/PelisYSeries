@@ -44,18 +44,11 @@ class UpcomingFragment : Fragment() {
     private val upcomingUseCase: UpcomingUseCase by inject()
 
     private val viewModel: UpcomingViewModel by viewModels(
-        factoryProducer = { UpcomingViewModel.UpcomingViewModelFactory(upcomingUseCase) }
+        factoryProducer = { UpcomingViewModel.UpcomingViewModelFactory(upcomingUseCase, repository) }
     )
 
     private lateinit var viewAdapter: MovieAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
-
-    private lateinit var progress: LottieAnimationView
-    private lateinit var recyclerview: RecyclerView
-    private lateinit var searchView: SearchView
-    private lateinit var emptyState: CardView
-    private lateinit var emptyStateFilter: LinearLayout
-    private lateinit var searchOnline: Button
 
     private var fragmentMainBinding: FragmentMoviesBinding? = null
     private val binding get() = fragmentMainBinding!!
@@ -73,61 +66,52 @@ class UpcomingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        progress = view.findViewById(R.id.progress)
-        recyclerview = view.findViewById(R.id.recyclerview)
-        searchView = view.findViewById(R.id.search)
-        emptyState = view.findViewById(R.id.empty_state)
-        emptyStateFilter = view.findViewById(R.id.empty_state_filter)
-        searchOnline = view.findViewById(R.id.search_online)
-
-        viewModel.getListMovies(repository)
-
-        setupViewModelAndObserve()
+        setupViewModelAndObserveMovies()
     }
 
-    /**
-     * Configuramos el viewModel para estar a la escucha de nuestra petición a la api de peliculas
-     * Y también va a estar a la escucha de cuando buscamos el video de la pelicula
-     */
-    private fun setupViewModelAndObserve() {
-        val daysObserver = Observer<List<Movie?>> {
-            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+    private fun setupViewModelAndObserveMovies() {
+        viewModel.getListMoviesLiveData().observe(viewLifecycleOwner, {
+            binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     if (viewAdapter.getItems().isNullOrEmpty()) {
-                        emptyState.show()
-                        emptyStateFilter.show()
+                        binding.emptyState.show()
+                        binding.emptyStateFilter.show()
                     } else {
-                        emptyState.hide()
-                        emptyStateFilter.hide()
+                        binding.emptyState.hide()
+                        binding.emptyStateFilter.hide()
                     }
                     return false
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    emptyState.hide()
-                    emptyStateFilter.hide()
+                    binding.emptyState.hide()
+                    binding.emptyStateFilter.hide()
                     viewAdapter.filter.filter(newText)
                     return false
                 }
             })
 
-            searchOnline.setOnClickListener {
-                viewModel.getListMoviesFromSearch(searchView.query.toString())
-                emptyState.hide()
-                emptyStateFilter.hide()
-                progress.playAnimation()
-                progress.show()
+            binding.searchOnline.setOnClickListener {
+                viewModel.changeQuery(binding.search.query.toString())
+
+                binding.emptyState.hide()
+                binding.emptyStateFilter.hide()
+                binding.progress.playAnimation()
+                binding.progress.show()
+
+                setupViewModelAndObserveSearch()
             }
 
-            searchView.setOnCloseListener {
-                emptyState.hide()
-                emptyStateFilter.hide()
+            binding.search.setOnCloseListener {
+                setAdapter(it)
+                binding.emptyState.hide()
+                binding.emptyStateFilter.hide()
                 false
             }
 
-            progress.cancelAnimation()
-            progress.hide()
-            recyclerview.show()
+            binding.progress.cancelAnimation()
+            binding.progress.hide()
+            binding.recyclerview.show()
 
             for (movie in it) {
                 movie?.let {
@@ -139,16 +123,18 @@ class UpcomingFragment : Fragment() {
             }
 
             setAdapter(it)
-        }
+        })
+    }
 
-        val searchObserver = Observer<List<Movie?>> {
-            emptyState.hide()
-            emptyStateFilter.hide()
-            progress.cancelAnimation()
-            progress.hide()
-            recyclerview.show()
+    private fun setupViewModelAndObserveSearch() {
+        viewModel.getListMoviesLiveDataFromSearch().observe(viewLifecycleOwner, {
+            binding.emptyState.hide()
+            binding.emptyStateFilter.hide()
+            binding.progress.cancelAnimation()
+            binding.progress.hide()
+            binding.recyclerview.show()
 
-            searchView.setOnCloseListener {
+            binding.search.setOnCloseListener {
                 lifecycleScope.launch {
                     setAdapter(repository.getMovieByOrigin(UPCOMING))
                 }
@@ -165,23 +151,16 @@ class UpcomingFragment : Fragment() {
             }
 
             setAdapter(it)
-        }
-
-        viewModel.getListMoviesLiveData().observe(viewLifecycleOwner, daysObserver)
-        viewModel.getListMoviesLiveDataFromSearch().observe(viewLifecycleOwner, searchObserver)
+        })
     }
 
-    /**
-     * Adaptamos el recyclerview de peliculas
-     * @param [movies] listado de peliculas
-     */
     private fun setAdapter(movies: List<Movie?>) {
 
         viewAdapter = MovieAdapter(movies) { itemClick(it) }
 
         viewManager = GridLayoutManager(this.requireContext(), 2)
 
-        recyclerview.apply {
+        binding.recyclerview.apply {
             setHasFixedSize(true)
 
             // use a linear layout manager

@@ -12,7 +12,7 @@ import java.util.*
  * Caso de uso para las movies
  * @author Axel Sanchez
  */
-class MovieUseCase {
+class MainUseCase {
     /**
      * Recibe el mutableLiveData y obtiene su listado de movies para crear los [ItemViewPager]
      * @return devuelve un listado de [ItemViewPager]

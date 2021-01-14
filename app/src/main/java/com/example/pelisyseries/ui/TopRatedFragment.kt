@@ -12,7 +12,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -41,7 +40,7 @@ class TopRatedFragment : Fragment() {
     private val topRatedUseCase: TopRatedUseCase by inject()
 
     private val viewModel: TopRatedViewModel by viewModels(
-        factoryProducer = { TopRatedViewModel.TopRatedViewModelFactory(topRatedUseCase) }
+        factoryProducer = { TopRatedViewModel.TopRatedViewModelFactory(topRatedUseCase, repository) }
     )
 
     private lateinit var viewAdapter: MovieAdapter
@@ -63,13 +62,11 @@ class TopRatedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.getListMovies(repository)
-
-        setupViewModelAndObserve()
+        setupViewModelAndObserveMovies()
     }
 
-    private fun setupViewModelAndObserve() {
-        val daysObserver = Observer<List<Movie?>> {
+    private fun setupViewModelAndObserveMovies() {
+        viewModel.getListMoviesLiveData().observe(viewLifecycleOwner, {
             binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     if (viewAdapter.getItems().isNullOrEmpty()) {
@@ -91,14 +88,18 @@ class TopRatedFragment : Fragment() {
             })
 
             binding.searchOnline.setOnClickListener {
-                viewModel.getListMoviesFromSearch(binding.search.query.toString())
+                viewModel.changeQuery(binding.search.query.toString())
+
                 binding.emptyState.hide()
                 binding.emptyStateFilter.hide()
                 progress.playAnimation()
                 progress.show()
+
+                setupViewModelAndObserveSearch()
             }
 
             binding.search.setOnCloseListener {
+                setAdapter(it)
                 binding.emptyState.hide()
                 binding.emptyStateFilter.hide()
                 false
@@ -118,9 +119,11 @@ class TopRatedFragment : Fragment() {
             }
 
             setAdapter(it)
-        }
+        })
+    }
 
-        val searchObserver = Observer<List<Movie?>> {
+    private fun setupViewModelAndObserveSearch() {
+        viewModel.getListMoviesLiveDataFromSearch().observe(viewLifecycleOwner, {
             binding.emptyState.hide()
             binding.emptyStateFilter.hide()
             progress.cancelAnimation()
@@ -144,10 +147,7 @@ class TopRatedFragment : Fragment() {
             }
 
             setAdapter(it)
-        }
-
-        viewModel.getListMoviesLiveData().observe(viewLifecycleOwner, daysObserver)
-        viewModel.getListMoviesLiveDataFromSearch().observe(viewLifecycleOwner, searchObserver)
+        })
     }
 
     private fun setAdapter(movies: List<Movie?>) {

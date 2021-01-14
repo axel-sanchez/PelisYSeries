@@ -11,8 +11,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +19,6 @@ import com.example.pelisyseries.common.show
 import com.example.pelisyseries.data.models.GLOBAL
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.models.POPULAR
-import com.example.pelisyseries.data.room.Database
 import com.example.pelisyseries.data.room.ProductDao
 import com.example.pelisyseries.databinding.FragmentMoviesBinding
 import com.example.pelisyseries.domain.PopularUseCase
@@ -41,7 +38,7 @@ class PopularFragment : Fragment() {
     private val popularUseCase: PopularUseCase by inject()
 
     private val viewModel: PopularViewModel by viewModels(
-        factoryProducer = { PopularViewModel.PopularViewModelFactory(popularUseCase) }
+        factoryProducer = { PopularViewModel.PopularViewModelFactory(popularUseCase, repository) }
     )
 
     private lateinit var viewAdapter: MovieAdapter
@@ -63,13 +60,11 @@ class PopularFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.getListMovies(repository)
-
-        setupViewModelAndObserve()
+        setupViewModelAndObserveMovies()
     }
 
-    private fun setupViewModelAndObserve() {
-        val daysObserver = Observer<List<Movie?>> {
+    private fun setupViewModelAndObserveMovies() {
+        viewModel.getListMoviesLiveData().observe(viewLifecycleOwner, {
             binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     if (viewAdapter.getItems().isNullOrEmpty()) {
@@ -91,14 +86,18 @@ class PopularFragment : Fragment() {
             })
 
             binding.searchOnline.setOnClickListener {
-                viewModel.getListMoviesFromSearch(binding.search.query.toString())
+                viewModel.changeQuery(binding.search.query.toString())
+
                 binding.emptyState.hide()
                 binding.emptyStateFilter.hide()
                 binding.progress.playAnimation()
                 binding.progress.show()
+
+                setupViewModelAndObserveSearch()
             }
 
             binding.search.setOnCloseListener {
+                setAdapter(it)
                 binding.emptyState.hide()
                 binding.emptyStateFilter.hide()
                 false
@@ -118,9 +117,11 @@ class PopularFragment : Fragment() {
             }
 
             setAdapter(it)
-        }
+        })
+    }
 
-        val searchObserver = Observer<List<Movie?>> {
+    private fun setupViewModelAndObserveSearch() {
+        viewModel.getListMoviesLiveDataFromSearch().observe(viewLifecycleOwner, {
             binding.emptyState.hide()
             binding.emptyStateFilter.hide()
             binding.progress.cancelAnimation()
@@ -144,10 +145,7 @@ class PopularFragment : Fragment() {
             }
 
             setAdapter(it)
-        }
-
-        viewModel.getListMoviesLiveData().observe(viewLifecycleOwner, daysObserver)
-        viewModel.getListMoviesLiveDataFromSearch().observe(viewLifecycleOwner, searchObserver)
+        })
     }
 
     private fun setAdapter(movies: List<Movie?>) {

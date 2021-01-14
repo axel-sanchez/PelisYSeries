@@ -9,12 +9,11 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import com.example.pelisyseries.databinding.FragmentMainBinding
-import com.example.pelisyseries.domain.MovieUseCase
+import com.example.pelisyseries.domain.MainUseCase
 import com.example.pelisyseries.ui.adapter.ItemViewPager
 import com.example.pelisyseries.ui.adapter.ViewPageAdapter
-import com.example.pelisyseries.viewmodel.MovieViewModel
+import com.example.pelisyseries.viewmodel.MainViewModel
 import org.koin.android.ext.android.inject
 
 /**
@@ -23,10 +22,10 @@ import org.koin.android.ext.android.inject
  */
 class MainFragment: Fragment() {
 
-    private val movieUseCase: MovieUseCase by inject()
+    private val mainUseCase: MainUseCase by inject()
 
-    private val viewModel: MovieViewModel by viewModels(
-        factoryProducer = { MovieViewModel.MovieViewModelFactory(movieUseCase) }
+    private val viewModel: MainViewModel by viewModels(
+        factoryProducer = { MainViewModel.MovieViewModelFactory(mainUseCase) }
     )
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
@@ -52,6 +51,7 @@ class MainFragment: Fragment() {
         fragmentMainBinding = null
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setupViewModelAndObserve() {
         val daysObserver = Observer<MutableList<ItemViewPager>> {
             setAdapter(it)

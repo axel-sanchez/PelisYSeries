@@ -10,10 +10,20 @@ import kotlinx.coroutines.launch
  * View model de [UpcomingFragment]
  * @author Axel Sanchez
  */
-class UpcomingViewModel(private val upcomingUseCase: UpcomingUseCase) : ViewModel() {
+class UpcomingViewModel(private val upcomingUseCase: UpcomingUseCase, private val repository: ProductDao) : ViewModel() {
 
-    private val listData = MutableLiveData<List<Movie?>>()
-    private val listDataFromSearch = MutableLiveData<List<Movie?>>()
+    private var query = ""
+
+    private val listData: MutableLiveData<List<Movie?>> by lazy {
+        MutableLiveData<List<Movie?>>().also {
+            getListMovies(repository)
+        }
+    }
+    private val listDataFromSearch: MutableLiveData<List<Movie?>> by lazy {
+        MutableLiveData<List<Movie?>>().also {
+            getListMoviesFromSearch(query)
+        }
+    }
 
     private fun setListData(moviesList: List<Movie?>) {
         listData.value = moviesList
@@ -23,13 +33,13 @@ class UpcomingViewModel(private val upcomingUseCase: UpcomingUseCase) : ViewMode
         listDataFromSearch.value = moviesList
     }
 
-    fun getListMovies(repository: ProductDao) {
+    private fun getListMovies(repository: ProductDao) {
         viewModelScope.launch {
             setListData(upcomingUseCase.getMovieList(repository))
         }
     }
 
-    fun getListMoviesFromSearch(query: String) {
+    private fun getListMoviesFromSearch(query: String) {
         viewModelScope.launch {
             setListDataFromSearch(upcomingUseCase.getMovieListFromSearch(query))
         }
@@ -43,10 +53,15 @@ class UpcomingViewModel(private val upcomingUseCase: UpcomingUseCase) : ViewMode
         return listDataFromSearch
     }
 
-    class UpcomingViewModelFactory(private val upcomingUseCase: UpcomingUseCase): ViewModelProvider.Factory {
+    fun changeQuery(newQuery: String){
+        query = newQuery
+        getListMoviesFromSearch(query)
+    }
+
+    class UpcomingViewModelFactory(private val upcomingUseCase: UpcomingUseCase, private val repository: ProductDao): ViewModelProvider.Factory {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return modelClass.getConstructor(UpcomingUseCase::class.java).newInstance(upcomingUseCase)
+            return modelClass.getConstructor(UpcomingUseCase::class.java, ProductDao::class.java).newInstance(upcomingUseCase, repository)
         }
     }
 }
