@@ -5,6 +5,7 @@ import com.example.pelisyseries.data.room.Database
 import com.example.pelisyseries.data.service.ApiService
 import com.example.pelisyseries.data.service.BASE_URL
 import com.example.pelisyseries.data.service.ConnectToApi
+import com.example.pelisyseries.domain.MovieUseCase
 import com.example.pelisyseries.domain.PopularUseCase
 import com.example.pelisyseries.domain.TopRatedUseCase
 import com.example.pelisyseries.domain.UpcomingUseCase
@@ -37,4 +38,5 @@ val moduleApp = module{
     single { PopularUseCase() }
     single { TopRatedUseCase() }
     single { UpcomingUseCase() }
+    single { MovieUseCase() }
 }

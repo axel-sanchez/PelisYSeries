@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.pelisyseries.databinding.FragmentMainBinding
@@ -14,6 +15,7 @@ import com.example.pelisyseries.domain.MovieUseCase
 import com.example.pelisyseries.ui.adapter.ItemViewPager
 import com.example.pelisyseries.ui.adapter.ViewPageAdapter
 import com.example.pelisyseries.viewmodel.MovieViewModel
+import org.koin.android.ext.android.inject
 
 /**
  * Primer fragment en mostrarse en el activity principal
@@ -21,9 +23,11 @@ import com.example.pelisyseries.viewmodel.MovieViewModel
  */
 class MainFragment: Fragment() {
 
-    private val viewModel: MovieViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), MovieViewModel.MovieViewModelFactory(MovieUseCase())).get(MovieViewModel::class.java)
-    }
+    private val movieUseCase: MovieUseCase by inject()
+
+    private val viewModel: MovieViewModel by viewModels(
+        factoryProducer = { MovieViewModel.MovieViewModelFactory(movieUseCase) }
+    )
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {

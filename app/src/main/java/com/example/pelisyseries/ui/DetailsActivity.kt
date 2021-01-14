@@ -40,10 +40,7 @@ class DetailsActivity : YouTubeBaseActivity() {
         val view = binding.root
         setContentView(view)
 
-        viewModel = ViewModelProviders.of(
-            MainFragment.copyFragment,
-            DetailsViewModel.DetailsViewModelFactory(DetailsUseCase())
-        ).get(DetailsViewModel::class.java)
+        viewModel = ViewModelProviders.of(MainFragment.copyFragment, DetailsViewModel.DetailsViewModelFactory(DetailsUseCase())).get(DetailsViewModel::class.java)
 
         binding.image.transitionName = "main_poster"
 
@@ -56,9 +53,6 @@ class DetailsActivity : YouTubeBaseActivity() {
         setupViewModelAndObserve()
     }
 
-    /**
-     * Creo un observer para que este observando al [DetailsViewModel] y cuando obtenga los datos actualizar la vista
-     */
     private fun setupViewModelAndObserve() {
         try {
             val daysObserver = Observer<Movie?> {
@@ -90,7 +84,8 @@ class DetailsActivity : YouTubeBaseActivity() {
                         })
                 }
             }
-            val observerVideo = Observer<Video?> {
+            viewModel.getDetailsMovieLiveData().observeForever(daysObserver)
+            viewModel.getLiveDataVideo().observeForever {
                 var key: String?
                 it?.let {
                     key = it.key
@@ -100,31 +95,21 @@ class DetailsActivity : YouTubeBaseActivity() {
                             findViewById<YouTubePlayerView>(R.id.youtube).initialize(
                                 API_KEY_YOUTUBE,
                                 object : YouTubePlayer.OnInitializedListener {
-                                    override fun onInitializationSuccess(
-                                        p0: YouTubePlayer.Provider?,
-                                        youtubePlayer: YouTubePlayer?,
-                                        p2: Boolean
-                                    ) {
+                                    override fun onInitializationSuccess(p0: YouTubePlayer.Provider?, youtubePlayer: YouTubePlayer?, p2: Boolean) {
                                         youtubePlayer?.let { it -> it.loadVideo(key) }
                                         findViewById<YouTubePlayerView>(R.id.youtube).visibility =
                                             View.VISIBLE
                                         binding.play.visibility = View.GONE
                                     }
 
-                                    override fun onInitializationFailure(
-                                        p0: YouTubePlayer.Provider?,
-                                        p1: YouTubeInitializationResult?
-                                    ) {
+                                    override fun onInitializationFailure(p0: YouTubePlayer.Provider?, p1: YouTubeInitializationResult?) {
                                         Log.e("error", "al cargar el video")
                                     }
-
                                 })
                         }
                     } ?: kotlin.run { binding.play.visibility = View.GONE }
                 } ?: kotlin.run { binding.play.visibility = View.GONE }
             }
-            viewModel.getDetailsMovieLiveData().observeForever(daysObserver)
-            viewModel.getLiveDataVideo().observeForever(observerVideo)
         } catch (e: Exception) {
             e.printStackTrace()
         }
