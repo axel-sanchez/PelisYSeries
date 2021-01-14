@@ -13,8 +13,8 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,7 +25,6 @@ import com.example.pelisyseries.common.show
 import com.example.pelisyseries.data.models.GLOBAL
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.models.UPCOMING
-import com.example.pelisyseries.data.room.Database
 import com.example.pelisyseries.data.room.ProductDao
 import com.example.pelisyseries.databinding.FragmentMoviesBinding
 import com.example.pelisyseries.domain.UpcomingUseCase
@@ -42,10 +41,11 @@ import org.koin.android.ext.android.inject
 class UpcomingFragment : Fragment() {
 
     private val repository: ProductDao by inject()
+    private val upcomingUseCase: UpcomingUseCase by inject()
 
-    private val viewModel: UpcomingViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), UpcomingViewModel.UpcomingViewModelFactory(UpcomingUseCase())).get(UpcomingViewModel::class.java)
-    }
+    private val viewModel: UpcomingViewModel by viewModels(
+        factoryProducer = { UpcomingViewModel.UpcomingViewModelFactory(upcomingUseCase) }
+    )
 
     private lateinit var viewAdapter: MovieAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager

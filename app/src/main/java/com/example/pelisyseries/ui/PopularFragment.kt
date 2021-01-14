@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
@@ -37,10 +38,11 @@ import org.koin.android.ext.android.inject
 class PopularFragment : Fragment() {
 
     private val repository: ProductDao by inject()
+    private val popularUseCase: PopularUseCase by inject()
 
-    private val viewModel: PopularViewModel by lazy {
-        ViewModelProviders.of(requireActivity(), PopularViewModel.PopularViewModelFactory(PopularUseCase())).get(PopularViewModel::class.java)
-    }
+    private val viewModel: PopularViewModel by viewModels(
+        factoryProducer = { PopularViewModel.PopularViewModelFactory(popularUseCase) }
+    )
 
     private lateinit var viewAdapter: MovieAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
