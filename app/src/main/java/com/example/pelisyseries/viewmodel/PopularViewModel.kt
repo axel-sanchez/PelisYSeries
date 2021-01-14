@@ -12,19 +12,13 @@ import kotlinx.coroutines.launch
  */
 class PopularViewModel(private val popularUseCase: PopularUseCase, private val repository: ProductDao) : ViewModel() {
 
-    private var query = ""
-
     private val listData: MutableLiveData<List<Movie?>> by lazy {
         MutableLiveData<List<Movie?>>().also {
             getListMovies(repository)
         }
     }
 
-    private val listDataFromSearch: MutableLiveData<List<Movie?>> by lazy {
-        MutableLiveData<List<Movie?>>().also {
-            getListMoviesFromSearch(query)
-        }
-    }
+    private val listDataFromSearch = MutableLiveData<List<Movie?>>()
 
     private fun setListData(moviesList: List<Movie?>) {
         listData.value = moviesList
@@ -40,7 +34,7 @@ class PopularViewModel(private val popularUseCase: PopularUseCase, private val r
         }
     }
 
-    private fun getListMoviesFromSearch(query: String) {
+    fun getListMoviesFromSearch(query: String) {
         viewModelScope.launch {
             setListDataFromSearch(popularUseCase.getMovieListFromSearch(query))
         }
@@ -52,11 +46,6 @@ class PopularViewModel(private val popularUseCase: PopularUseCase, private val r
 
     fun getListMoviesLiveDataFromSearch(): LiveData<List<Movie?>> {
         return listDataFromSearch
-    }
-
-    fun changeQuery(newQuery: String){
-        query = newQuery
-        getListMoviesFromSearch(query)
     }
 
     class PopularViewModelFactory(private val popularUseCase: PopularUseCase,

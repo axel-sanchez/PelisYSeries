@@ -92,7 +92,7 @@ class UpcomingFragment : Fragment() {
             })
 
             binding.searchOnline.setOnClickListener {
-                viewModel.changeQuery(binding.search.query.toString())
+                viewModel.getListMoviesFromSearch(binding.search.query.toString())
 
                 binding.emptyState.hide()
                 binding.emptyStateFilter.hide()

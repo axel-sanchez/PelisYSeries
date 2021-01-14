@@ -12,18 +12,12 @@ import kotlinx.coroutines.launch
  */
 class UpcomingViewModel(private val upcomingUseCase: UpcomingUseCase, private val repository: ProductDao) : ViewModel() {
 
-    private var query = ""
-
     private val listData: MutableLiveData<List<Movie?>> by lazy {
         MutableLiveData<List<Movie?>>().also {
             getListMovies(repository)
         }
     }
-    private val listDataFromSearch: MutableLiveData<List<Movie?>> by lazy {
-        MutableLiveData<List<Movie?>>().also {
-            getListMoviesFromSearch(query)
-        }
-    }
+    private val listDataFromSearch = MutableLiveData<List<Movie?>>()
 
     private fun setListData(moviesList: List<Movie?>) {
         listData.value = moviesList
@@ -39,7 +33,7 @@ class UpcomingViewModel(private val upcomingUseCase: UpcomingUseCase, private va
         }
     }
 
-    private fun getListMoviesFromSearch(query: String) {
+    fun getListMoviesFromSearch(query: String) {
         viewModelScope.launch {
             setListDataFromSearch(upcomingUseCase.getMovieListFromSearch(query))
         }
@@ -51,11 +45,6 @@ class UpcomingViewModel(private val upcomingUseCase: UpcomingUseCase, private va
 
     fun getListMoviesLiveDataFromSearch(): LiveData<List<Movie?>> {
         return listDataFromSearch
-    }
-
-    fun changeQuery(newQuery: String){
-        query = newQuery
-        getListMoviesFromSearch(query)
     }
 
     class UpcomingViewModelFactory(private val upcomingUseCase: UpcomingUseCase, private val repository: ProductDao): ViewModelProvider.Factory {
