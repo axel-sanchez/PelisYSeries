@@ -95,7 +95,9 @@ class TopRatedFragment : Fragment() {
                 progress.playAnimation()
                 progress.show()
 
-                setupViewModelAndObserveSearch()
+                if(!viewModel.getListMoviesLiveDataFromSearch().hasObservers()){
+                    setupViewModelAndObserveSearch()
+                }
             }
 
             binding.search.setOnCloseListener {

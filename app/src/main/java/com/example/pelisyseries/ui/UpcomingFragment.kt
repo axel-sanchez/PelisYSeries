@@ -99,7 +99,9 @@ class UpcomingFragment : Fragment() {
                 binding.progress.playAnimation()
                 binding.progress.show()
 
-                setupViewModelAndObserveSearch()
+                if(!viewModel.getListMoviesLiveDataFromSearch().hasObservers()){
+                    setupViewModelAndObserveSearch()
+                }
             }
 
             binding.search.setOnCloseListener {
