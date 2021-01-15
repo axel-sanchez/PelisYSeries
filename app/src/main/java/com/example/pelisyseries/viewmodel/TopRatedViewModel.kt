@@ -2,7 +2,7 @@ package com.example.pelisyseries.viewmodel
 
 import androidx.lifecycle.*
 import com.example.pelisyseries.data.models.Movie
-import com.example.pelisyseries.data.room.ProductDao
+import com.example.pelisyseries.data.room.MovieDao
 import com.example.pelisyseries.domain.TopRatedUseCase
 import kotlinx.coroutines.launch
 
@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
  * View model de [TopRatedFragment]
  * @author Axel Sanchez
  */
-class TopRatedViewModel(private val topRatedUseCase: TopRatedUseCase, private val repository: ProductDao) : ViewModel() {
+class TopRatedViewModel(private val topRatedUseCase: TopRatedUseCase, private val repository: MovieDao) : ViewModel() {
 
     private val listData: MutableLiveData<List<Movie?>> by lazy {
         MutableLiveData<List<Movie?>>().also {
@@ -27,7 +27,7 @@ class TopRatedViewModel(private val topRatedUseCase: TopRatedUseCase, private va
         listDataFromSearch.value = moviesList
     }
 
-    private fun getListMovies(repository: ProductDao) {
+    private fun getListMovies(repository: MovieDao) {
         viewModelScope.launch {
             setListData(topRatedUseCase.getMovieList(repository))
         }
@@ -48,10 +48,10 @@ class TopRatedViewModel(private val topRatedUseCase: TopRatedUseCase, private va
     }
 
     class TopRatedViewModelFactory(private val topRatedUseCase: TopRatedUseCase,
-                                   private val repository: ProductDao): ViewModelProvider.Factory {
+                                   private val repository: MovieDao): ViewModelProvider.Factory {
 
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-            return modelClass.getConstructor(TopRatedUseCase::class.java, ProductDao::class.java).newInstance(topRatedUseCase, repository)
+            return modelClass.getConstructor(TopRatedUseCase::class.java, MovieDao::class.java).newInstance(topRatedUseCase, repository)
         }
     }
 }

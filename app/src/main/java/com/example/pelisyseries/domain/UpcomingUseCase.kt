@@ -2,7 +2,7 @@ package com.example.pelisyseries.domain
 
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.models.UPCOMING
-import com.example.pelisyseries.data.room.ProductDao
+import com.example.pelisyseries.data.room.MovieDao
 import com.example.pelisyseries.data.service.ConnectToApi
 import org.koin.standalone.KoinComponent
 import org.koin.standalone.inject
@@ -19,7 +19,7 @@ class UpcomingUseCase: KoinComponent {
      * @param [repository] objeto que manipula la database
      * @return devuelve un listado de movies próximas a estrenar
      */
-    suspend fun getMovieList(repository: ProductDao): List<Movie?> {
+    suspend fun getMovieList(repository: MovieDao): List<Movie?> {
 
         var movies = repository.getMovieByOrigin(UPCOMING)
 

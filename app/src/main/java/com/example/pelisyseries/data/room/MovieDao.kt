@@ -7,7 +7,7 @@ import com.example.pelisyseries.data.models.Movie
  * @author Axel Sanchez
  */
 @Dao
-interface ProductDao {
+interface MovieDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMovie(movie: Movie)
 

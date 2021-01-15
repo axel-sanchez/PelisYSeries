@@ -51,7 +51,6 @@ class MainFragment: Fragment() {
         fragmentMainBinding = null
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setupViewModelAndObserve() {
         val daysObserver = Observer<MutableList<ItemViewPager>> {
             setAdapter(it)

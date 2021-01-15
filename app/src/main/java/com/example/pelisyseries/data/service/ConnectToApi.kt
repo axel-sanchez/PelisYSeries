@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.models.UPCOMING
 import com.example.pelisyseries.data.models.Video
-import com.example.pelisyseries.data.room.ProductDao
+import com.example.pelisyseries.data.room.MovieDao
 import org.koin.standalone.KoinComponent
 import org.koin.standalone.inject
 
@@ -17,7 +17,7 @@ const val API_KEY = "a0de5a9fe43359e41cb94081d6bafc05" //(AUTH V3)
  */
 class ConnectToApi: KoinComponent {
     private val service: ApiService by inject()
-    private val repository: ProductDao by inject()
+    private val repository: MovieDao by inject()
 
     /**
      * Esta función es la encargada de retornar las movies mas populares

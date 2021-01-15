@@ -19,7 +19,7 @@ import com.example.pelisyseries.common.show
 import com.example.pelisyseries.data.models.GLOBAL
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.models.POPULAR
-import com.example.pelisyseries.data.room.ProductDao
+import com.example.pelisyseries.data.room.MovieDao
 import com.example.pelisyseries.databinding.FragmentMoviesBinding
 import com.example.pelisyseries.domain.PopularUseCase
 import com.example.pelisyseries.ui.adapter.MovieAdapter
@@ -34,7 +34,7 @@ import org.koin.android.ext.android.inject
  */
 class PopularFragment : Fragment() {
 
-    private val repository: ProductDao by inject()
+    private val repository: MovieDao by inject()
     private val popularUseCase: PopularUseCase by inject()
 
     private val viewModel: PopularViewModel by viewModels(

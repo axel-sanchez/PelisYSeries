@@ -7,25 +7,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
-import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.airbnb.lottie.LottieAnimationView
-import com.example.pelisyseries.R
 import com.example.pelisyseries.common.hide
 import com.example.pelisyseries.common.show
 import com.example.pelisyseries.data.models.GLOBAL
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.models.UPCOMING
-import com.example.pelisyseries.data.room.ProductDao
+import com.example.pelisyseries.data.room.MovieDao
 import com.example.pelisyseries.databinding.FragmentMoviesBinding
 import com.example.pelisyseries.domain.UpcomingUseCase
 import com.example.pelisyseries.ui.adapter.MovieAdapter
@@ -40,7 +34,7 @@ import org.koin.android.ext.android.inject
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class UpcomingFragment : Fragment() {
 
-    private val repository: ProductDao by inject()
+    private val repository: MovieDao by inject()
     private val upcomingUseCase: UpcomingUseCase by inject()
 
     private val viewModel: UpcomingViewModel by viewModels(

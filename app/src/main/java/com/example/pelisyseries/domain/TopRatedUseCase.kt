@@ -2,7 +2,7 @@ package com.example.pelisyseries.domain
 
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.models.TOP_RATED
-import com.example.pelisyseries.data.room.ProductDao
+import com.example.pelisyseries.data.room.MovieDao
 import com.example.pelisyseries.data.service.ConnectToApi
 import org.koin.standalone.KoinComponent
 import org.koin.standalone.inject
@@ -14,7 +14,7 @@ import org.koin.standalone.inject
 class TopRatedUseCase: KoinComponent {
     private val api: ConnectToApi by inject()
 
-    suspend fun getMovieList(repository: ProductDao): List<Movie?> {
+    suspend fun getMovieList(repository: MovieDao): List<Movie?> {
         var movies = repository.getMovieByOrigin(TOP_RATED)
 
         return if (movies.isEmpty()) {

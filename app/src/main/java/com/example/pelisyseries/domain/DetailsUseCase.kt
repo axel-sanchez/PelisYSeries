@@ -2,7 +2,7 @@ package com.example.pelisyseries.domain
 
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.models.Video
-import com.example.pelisyseries.data.room.ProductDao
+import com.example.pelisyseries.data.room.MovieDao
 import com.example.pelisyseries.data.service.ConnectToApi
 import org.koin.standalone.KoinComponent
 import org.koin.standalone.inject
@@ -13,7 +13,7 @@ import org.koin.standalone.inject
  */
 class DetailsUseCase: KoinComponent {
     private val api: ConnectToApi by inject()
-    private val repository: ProductDao by inject()
+    private val repository: MovieDao by inject()
 
     /**
      * Obtiene los detalles de la movie

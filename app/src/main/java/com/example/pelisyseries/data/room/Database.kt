@@ -15,5 +15,5 @@ import com.example.pelisyseries.data.models.Movie
 )
 @TypeConverters(Converters::class)
 abstract class Database : RoomDatabase() {
-    abstract fun productDao(): ProductDao
+    abstract fun productDao(): MovieDao
 }

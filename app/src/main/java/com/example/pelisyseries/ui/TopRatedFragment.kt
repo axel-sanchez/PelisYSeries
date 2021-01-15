@@ -11,7 +11,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +19,7 @@ import com.example.pelisyseries.common.show
 import com.example.pelisyseries.data.models.GLOBAL
 import com.example.pelisyseries.data.models.Movie
 import com.example.pelisyseries.data.models.TOP_RATED
-import com.example.pelisyseries.data.room.ProductDao
+import com.example.pelisyseries.data.room.MovieDao
 import com.example.pelisyseries.databinding.FragmentMoviesBinding
 import com.example.pelisyseries.domain.TopRatedUseCase
 import com.example.pelisyseries.ui.adapter.MovieAdapter
@@ -36,7 +35,7 @@ import org.koin.android.ext.android.inject
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
 class TopRatedFragment : Fragment() {
 
-    private val repository: ProductDao by inject()
+    private val repository: MovieDao by inject()
     private val topRatedUseCase: TopRatedUseCase by inject()
 
     private val viewModel: TopRatedViewModel by viewModels(
